@@ -2,8 +2,15 @@
   "info": {
     "_postman_id": "hddt-healthcheck-001",
     "name": "HoaDonDienTu - Healthcheck",
-    "description": "Healthcheck API hoadondientu.gdt.gov.vn/api — query/header khớp call site production.\n\nGuest: hdon + (khmshdon==6 ? tdlap : tgtttbso). FE kiem-tra-hoa-don + routes/index.js.\nExcel: Action \"Xuất hóa đơn (hóa đơn mua vào)\"; sco search thêm ttxly==8 (Node crawl-excel).\npurchase dùng export-excel-sold?type=purchase; sold không gửi type.\nDetail: Action \"Xem hóa đơn (hóa đơn bán ra)\". XML: Action C# \"Xuất xml (hóa đơn mua vào)\".\nRelated: Action \"Xem thông tin liên quan (hóa đơn bán ra)\". Relative: Bearer only.\nTBSS: sort ngay:desc,so:desc; search ngay=ge/le; size 50; Action Tìm kiếm.\nPITW: nlap ISO (VN 00:00 / 23:59:59.999); size 50. Không gọi pitw/export-excel (chỉ config).\nXML PITW: Action rỗng + Referer tra-cuu-chung-tu-tncn. Cookie inject run.js nếu pitw_cookie.\n\nnpm test = 01_PUBLIC. npm run test:all = toàn bộ folder (login nếu có tài khoản).\nLogin: npm run test:login -- --env-var hddt_username=... --env-var hddt_password=...\n\nAssert theo logic repo: HTTP 200 + body đúng shape. WAF 403 / HTML WAF / 401 / JSON lỗi → FAIL.\nExcel: xlsx PK. Detail: id. XML: ZIP PK. Related: khhdon. TBSS/PITW: datas[]. Guest: ttxly hoặc body rỗng.",
+    "description": "Healthcheck API hoadondientu.gdt.gov.vn/api — query/header khớp call site production + request-id UUID.\n\nHọ proxy (Chrome/120, Accept JSON): captcha, authenticate, profile, dsdkts, guest, relative.\nHọ crawler HĐ (Chrome/106, Action/End-Point): excel, detail, xml, related, TBSS. Không Cookie jar.\nHọ PITW (Chrome/150 Edg): Referer TNCN; Cookie chỉ khi pitw_cookie.\n\nGuest: hdon + (khmshdon==6 ? tdlap : tgtttbso). FE kiem-tra-hoa-don + routes/index.js.\nExcel: Action \"Xuất hóa đơn (hóa đơn mua vào)\"; sco search thêm ttxly==8 (Node crawl-excel).\npurchase dùng export-excel-sold?type=purchase; sold không gửi type.\nDetail: Action \"Xem hóa đơn (hóa đơn bán ra)\". XML: Action C# \"Xuất xml (hóa đơn mua vào)\".\nRelated: Action \"Xem thông tin liên quan (hóa đơn bán ra)\". Relative: Bearer only (proxy).\nTBSS: sort ngay:desc,so:desc; search ngay=ge/le; size 50; Action Tìm kiếm.\nPITW: nlap ISO (VN 00:00 / 23:59:59.999); size 50. Không gọi pitw/export-excel (chỉ config).\nXML PITW: Action rỗng + Referer tra-cuu-chung-tu-tncn. Cookie inject run.js nếu pitw_cookie.\n\nnpm test = 01_PUBLIC. npm run test:all = toàn bộ folder (login nếu có tài khoản).\nLogin: npm run test:login -- --env-var hddt_username=... --env-var hddt_password=...\n\nAssert theo logic repo: HTTP 200 + body đúng shape. WAF 403 / HTML WAF / 401 / JSON lỗi → FAIL.\nExcel: xlsx PK. Detail: id. XML: ZIP PK. Related: khhdon. TBSS/PITW: datas[]. Guest: ttxly hoặc body rỗng.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "protocolProfileBehavior": {
+    "disabledSystemHeaders": {
+      "postman-token": true,
+      "cache-control": true,
+      "accept-encoding": true
+    }
   },
   "variable": [
     {
@@ -41,6 +48,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -76,12 +89,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
@@ -133,6 +154,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -176,28 +203,24 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
                 "value": "application/json, text/plain, */*"
-              },
-              {
-                "key": "Accept-Language",
-                "value": "vi"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Referer",
-                "value": "{{baseUrl}}/"
               },
               {
                 "key": "request-id",
@@ -242,6 +265,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -285,28 +314,24 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
                 "value": "application/json, text/plain, */*"
-              },
-              {
-                "key": "Accept-Language",
-                "value": "vi"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Referer",
-                "value": "{{baseUrl}}/"
               },
               {
                 "key": "request-id",
@@ -360,6 +385,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -395,16 +426,27 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            }
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
                 "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
               },
               {
                 "key": "request-id",
@@ -447,6 +489,12 @@
                   "function isHtmlBlocked() {",
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
                   "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
@@ -491,28 +539,23 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            }
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
                 "value": "application/json, text/plain, */*"
-              },
-              {
-                "key": "Accept-Language",
-                "value": "vi"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Referer",
-                "value": "{{baseUrl}}/"
               },
               {
                 "key": "request-id",
@@ -550,6 +593,14 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "POST",
             "header": [
@@ -601,6 +652,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -645,36 +702,31 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            }
+          },
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
                 "value": "application/json, text/plain, */*"
               },
               {
-                "key": "Accept-Language",
-                "value": "vi"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Referer",
-                "value": "{{baseUrl}}/"
+                "key": "Content-Type",
+                "value": "application/json"
               },
               {
                 "key": "request-id",
                 "value": "{{$guid}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
               }
             ],
             "body": {
@@ -725,6 +777,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -769,36 +827,31 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            }
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
                 "value": "application/json, text/plain, */*"
               },
               {
-                "key": "Accept-Language",
-                "value": "vi"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Referer",
-                "value": "{{baseUrl}}/"
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
               },
               {
                 "key": "request-id",
                 "value": "{{$guid}}"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
               }
             ],
             "url": {
@@ -851,6 +904,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -886,16 +945,28 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
                 "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
               },
               {
                 "key": "request-id",
@@ -938,6 +1009,12 @@
                   "function isHtmlBlocked() {",
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
                   "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
@@ -982,28 +1059,24 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
                 "value": "application/json, text/plain, */*"
-              },
-              {
-                "key": "Accept-Language",
-                "value": "vi"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Referer",
-                "value": "{{baseUrl}}/"
               },
               {
                 "key": "request-id",
@@ -1041,6 +1114,14 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "POST",
             "header": [
@@ -1092,6 +1173,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -1137,28 +1224,24 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
                 "value": "application/json, text/plain, */*"
-              },
-              {
-                "key": "Accept-Language",
-                "value": "vi"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Referer",
-                "value": "{{baseUrl}}/"
               },
               {
                 "key": "request-id",
@@ -1248,6 +1331,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -1290,12 +1379,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept-Language",
@@ -1308,10 +1405,6 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
-              },
-              {
-                "key": "request-id",
-                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -1332,6 +1425,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -1384,6 +1481,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -1426,12 +1529,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept-Language",
@@ -1444,10 +1555,6 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
-              },
-              {
-                "key": "request-id",
-                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -1468,6 +1575,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -1520,6 +1631,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -1562,12 +1679,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept-Language",
@@ -1580,10 +1705,6 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
-              },
-              {
-                "key": "request-id",
-                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -1604,6 +1725,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -1660,6 +1785,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -1702,12 +1833,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept-Language",
@@ -1720,10 +1859,6 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
-              },
-              {
-                "key": "request-id",
-                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -1744,6 +1879,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -1805,6 +1944,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -1848,12 +1993,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept-Language",
@@ -1866,10 +2019,6 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
-              },
-              {
-                "key": "request-id",
-                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -1886,6 +2035,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -1946,6 +2099,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -1989,12 +2148,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept-Language",
@@ -2007,10 +2174,6 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
-              },
-              {
-                "key": "request-id",
-                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -2027,6 +2190,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -2092,6 +2259,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -2134,12 +2307,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept-Language",
@@ -2152,10 +2333,6 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
-              },
-              {
-                "key": "request-id",
-                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -2172,6 +2349,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -2232,6 +2413,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -2274,12 +2461,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept-Language",
@@ -2292,10 +2487,6 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
-              },
-              {
-                "key": "request-id",
-                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -2312,6 +2503,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -2377,6 +2572,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -2420,12 +2621,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept",
@@ -2444,10 +2653,6 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "request-id",
-                "value": "{{$guid}}"
-              },
-              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -2458,6 +2663,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -2518,6 +2727,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -2561,12 +2776,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept",
@@ -2585,10 +2808,6 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "request-id",
-                "value": "{{$guid}}"
-              },
-              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -2599,6 +2818,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -2659,6 +2882,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -2701,36 +2930,32 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
                 "value": "application/json, text/plain, */*"
               },
               {
-                "key": "Accept-Language",
-                "value": "vi"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Referer",
-                "value": "{{baseUrl}}/"
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
               },
               {
                 "key": "request-id",
                 "value": "{{$guid}}"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
               }
             ],
             "url": {
@@ -2791,6 +3016,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -2833,36 +3064,32 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentProxy}}"
               },
               {
                 "key": "Accept",
                 "value": "application/json, text/plain, */*"
               },
               {
-                "key": "Accept-Language",
-                "value": "vi"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Referer",
-                "value": "{{baseUrl}}/"
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
               },
               {
                 "key": "request-id",
                 "value": "{{$guid}}"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
               }
             ],
             "url": {
@@ -2928,6 +3155,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -2972,12 +3205,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept",
@@ -2996,10 +3237,6 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "request-id",
-                "value": "{{$guid}}"
-              },
-              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -3010,6 +3247,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -3066,6 +3307,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -3110,12 +3357,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Accept",
@@ -3134,10 +3389,6 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "request-id",
-                "value": "{{$guid}}"
-              },
-              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -3148,6 +3399,10 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -3209,6 +3464,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -3241,6 +3502,9 @@
                   "    });",
                   "} else {",
                   "    pm.test(\"pitw: datas[] (parseCrawlResult / chungTuTncnHeader)\", function () {",
+                  "        if (isPitwHtmlLoginRedirect()) {",
+                  "            pm.expect.fail(\"Phiên CQT không còn hợp lệ hoặc đã bị điều hướng khỏi /api/pitw\");",
+                  "        }",
                   "        const j = tctJson();",
                   "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
                   "        const err = cqtErrorMessage(j);",
@@ -3253,12 +3517,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentPitw}}"
               },
               {
                 "key": "Accept",
@@ -3269,32 +3541,32 @@
                 "value": "vi"
               },
               {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "request-id",
-                "value": "{{$guid}}"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
-              },
-              {
                 "key": "Accept-Encoding",
                 "value": "gzip, deflate, br"
-              },
-              {
-                "key": "Action",
-                "value": "T%C3%ACm%20ki%E1%BA%BFm"
               },
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-chung-tu-tncn"
               },
               {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
                 "key": "Referer",
                 "value": "https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Action",
+                "value": "T%C3%ACm%20ki%E1%BA%BFm"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -3349,6 +3621,12 @@
                   "    var t = tctText();",
                   "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
                   "}",
+                  "function isPitwHtmlLoginRedirect() {",
+                  "    var t = tctText();",
+                  "    if (!t || t.charAt(0) !== \"<\") return false;",
+                  "    var lower = t.toLowerCase();",
+                  "    return lower.indexOf(\"dang-nhap\") >= 0 || lower.indexOf(\"dangnhap\") >= 0 || lower.indexOf(\"/login\") >= 0 || t.indexOf(\"đăng nhập\") >= 0 || lower.indexOf(\"sign in\") >= 0 || lower.indexOf(\"security-taxpayer/authenticate\") >= 0;",
+                  "}",
                   "function isPkZip() {",
                   "    var s = pm.response.stream;",
                   "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
@@ -3391,12 +3669,20 @@
               }
             }
           ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "postman-token": true,
+              "cache-control": true,
+              "accept-encoding": true
+            },
+            "disableCookies": true
+          },
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "User-Agent",
-                "value": "{{userAgent}}"
+                "value": "{{userAgentPitw}}"
               },
               {
                 "key": "Accept",
@@ -3407,32 +3693,32 @@
                 "value": "vi"
               },
               {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "request-id",
-                "value": "{{$guid}}"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
-              },
-              {
                 "key": "Accept-Encoding",
                 "value": "gzip, deflate, br"
-              },
-              {
-                "key": "Action",
-                "value": ""
               },
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-chung-tu-tncn"
               },
               {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
                 "key": "Referer",
                 "value": "https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Action",
+                "value": ""
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {

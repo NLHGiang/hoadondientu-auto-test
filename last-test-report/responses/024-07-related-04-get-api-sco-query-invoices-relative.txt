@@ -1,1 +1,1 @@
-{"timestamp":"16/09/2026 10:51:18","message":"Failed to convert value of type 'java.lang.String' to required type 'byte'; nested exception is java.lang.NumberFormatException: For input string: \"\"","details":"","path":"uri=/invoices/relative"}
+{"timestamp":"16/09/2026 11:18:52","message":"Failed to convert value of type 'java.lang.String' to required type 'byte'; nested exception is java.lang.NumberFormatException: For input string: \"\"","details":"","path":"uri=/invoices/relative"}

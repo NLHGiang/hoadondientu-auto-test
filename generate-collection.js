@@ -2,26 +2,89 @@ const fs = require('fs');
 const path = require('path');
 
 const out = path.join(__dirname, 'HoaDonDienTu.healthcheck.postman_collection.json');
-const ua = '{{userAgent}}';
+const uaProxy = '{{userAgentProxy}}';
+const uaCrawl = '{{userAgentCrawl}}';
+const uaPitw = '{{userAgentPitw}}';
 const origin = '{{baseUrl}}';
+const requestId = { key: 'request-id', value: '{{$guid}}' };
 
 function testEvent(exec) {
   return [{ listen: 'test', script: { type: 'text/javascript', exec } }];
 }
 
-/** Header TCT: Accept-Language `vi` như crawl-excel / sold / PITW. Extra ghi đè cùng key. */
-function headersTct(extra) {
-  const h = [
-    { key: 'User-Agent', value: ua },
-    { key: 'Accept', value: 'application/json, text/plain, */*' },
+const disabledSystemHeaders = {
+  'postman-token': true,
+  'cache-control': true,
+  'accept-encoding': true,
+};
+
+/**
+ * Không disable `host` / `connection`: Newman `setHost: false` làm mất Host trên wire
+ * → OpenShift 503 "The host doesn't exist". Curl report vẫn lọc 2 header này.
+ */
+const ppbNoFingerprint = { disabledSystemHeaders };
+
+/** Crawler HĐ / PITW / public / guest: không gửi Cookie jar từ GET /. */
+const ppbNoCookies = { disabledSystemHeaders, disableCookies: true };
+
+function mergeHeaders(base, extra) {
+  const extraList = extra && extra.length ? extra : [];
+  const keys = new Set(extraList.map((x) => String(x.key).toLowerCase()));
+  const merged = base.filter((x) => !keys.has(String(x.key).toLowerCase())).concat(extraList);
+  if (!keys.has('request-id')) merged.push(requestId);
+  return merged;
+}
+
+/** SanitizeGenericForwardHeaders: UA Chrome/120 + Accept JSON. */
+function headersProxy(extra) {
+  return mergeHeaders(
+    [
+      { key: 'User-Agent', value: uaProxy },
+      { key: 'Accept', value: 'application/json, text/plain, */*' },
+    ],
+    extra
+  );
+}
+
+/** crawl-excel / assets / sold: Chrome/106 + portal HĐ. */
+function headersCrawlHd(extra) {
+  return mergeHeaders(
+    [
+      { key: 'User-Agent', value: uaCrawl },
+      { key: 'Accept', value: 'application/json, text/plain, */*' },
+      { key: 'Accept-Language', value: 'vi' },
+      { key: 'Origin', value: origin },
+      { key: 'Referer', value: `${origin}/` },
+      { key: 'Authorization', value: 'Bearer {{hddt_token}}' },
+    ],
+    extra
+  );
+}
+
+/** chung-tu-tncn-crawl-build.js */
+function headersPitw(extra) {
+  return mergeHeaders(
+    [
+      { key: 'User-Agent', value: uaPitw },
+      { key: 'Accept', value: 'application/json, text/plain, */*' },
+      { key: 'Accept-Language', value: 'vi' },
+      { key: 'Accept-Encoding', value: 'gzip, deflate, br' },
+      { key: 'End-Point', value: '/tra-cuu/tra-cuu-chung-tu-tncn' },
+      { key: 'Origin', value: origin },
+      { key: 'Referer', value: 'https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn' },
+      { key: 'Authorization', value: 'Bearer {{hddt_token}}' },
+    ],
+    extra
+  );
+}
+
+function headersPortal() {
+  return [
+    { key: 'User-Agent', value: uaProxy },
+    { key: 'Accept', value: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
     { key: 'Accept-Language', value: 'vi' },
-    { key: 'Origin', value: origin },
-    { key: 'Referer', value: `${origin}/` },
-    { key: 'request-id', value: '{{$guid}}' },
+    requestId,
   ];
-  if (!extra || !extra.length) return h;
-  const keys = new Set(extra.map((x) => String(x.key).toLowerCase()));
-  return h.filter((x) => !keys.has(String(x.key).toLowerCase())).concat(extra);
 }
 
 const tctHelpers = [
@@ -38,6 +101,12 @@ const tctHelpers = [
   'function isHtmlBlocked() {',
   '    var t = tctText();',
   '    return t.indexOf("This page can\'t be displayed") >= 0 || /Request Rejected/i.test(t) || t.indexOf("<!DOCTYPE") === 0;',
+  '}',
+  'function isPitwHtmlLoginRedirect() {',
+  '    var t = tctText();',
+  '    if (!t || t.charAt(0) !== "<") return false;',
+  '    var lower = t.toLowerCase();',
+  '    return lower.indexOf("dang-nhap") >= 0 || lower.indexOf("dangnhap") >= 0 || lower.indexOf("/login") >= 0 || t.indexOf("đăng nhập") >= 0 || lower.indexOf("sign in") >= 0 || lower.indexOf("security-taxpayer/authenticate") >= 0;',
   '}',
   'function isPkZip() {',
   '    var s = pm.response.stream;',
@@ -223,6 +292,9 @@ const assertTbss = assertExpect([
 
 const assertPitwList = assertExpect([
   '    pm.test("pitw: datas[] (parseCrawlResult / chungTuTncnHeader)", function () {',
+  '        if (isPitwHtmlLoginRedirect()) {',
+  '            pm.expect.fail("Phiên CQT không còn hợp lệ hoặc đã bị điều hướng khỏi /api/pitw");',
+  '        }',
   '        const j = tctJson();',
   '        pm.expect(j, "JSON").to.be.an("object");',
   '        const err = cqtErrorMessage(j);',
@@ -255,19 +327,40 @@ function tctUrl(pathSegments, query) {
   };
 }
 
-function authGet(name, pathSegments, query, extraHeaders, assertExec) {
+function portalUrl() {
+  return {
+    raw: '{{baseUrl}}/',
+    protocol: 'https',
+    host: ['hoadondientu', 'gdt', 'gov', 'vn'],
+    path: [''],
+  };
+}
+
+function itemReq(name, request, assertExec, { cookies = false } = {}) {
   return {
     name,
     event: testEvent(assertExec),
-    request: {
-      method: 'GET',
-      header: headersTct([
-        { key: 'Authorization', value: 'Bearer {{hddt_token}}' },
-        ...(extraHeaders || []),
-      ]),
-      url: tctUrl(pathSegments, query),
-    },
+    protocolProfileBehavior: cookies ? ppbNoFingerprint : ppbNoCookies,
+    request,
   };
+}
+
+function authGet(name, pathSegments, query, extraHeaders, assertExec, family) {
+  let header;
+  if (family === 'pitw') header = headersPitw(extraHeaders);
+  else if (family === 'proxy') {
+    header = headersProxy([
+      { key: 'Authorization', value: 'Bearer {{hddt_token}}' },
+      ...(extraHeaders || []),
+    ]);
+  } else {
+    header = headersCrawlHd(extraHeaders);
+  }
+  return itemReq(name, {
+    method: 'GET',
+    header,
+    url: tctUrl(pathSegments, query),
+  }, assertExec);
 }
 
 const invoiceQs = [
@@ -293,7 +386,6 @@ const excelPurchaseScoQs = excelScoQs.concat([{ key: 'type', value: 'purchase' }
 
 const acceptStar = { key: 'Accept', value: '*/*' };
 const acceptEncGzip = { key: 'Accept-Encoding', value: 'gzip,deflate,br' };
-const acceptEncSpaced = { key: 'Accept-Encoding', value: 'gzip, deflate, br' };
 
 /** crawl-excel.js / invoice-init-sync-seed.js */
 const actionExcel = {
@@ -321,32 +413,31 @@ const actionSearch = { key: 'Action', value: 'T%C3%ACm%20ki%E1%BA%BFm' };
 const actionEmpty = { key: 'Action', value: '' };
 
 const endPointHd = { key: 'End-Point', value: '/tra-cuu/tra-cuu-hoa-don' };
-const endPointTncn = { key: 'End-Point', value: '/tra-cuu/tra-cuu-chung-tu-tncn' };
-const refererTncn = {
-  key: 'Referer',
-  value: 'https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn',
-};
 
 const excelHeaders = [acceptStar, acceptEncGzip, actionExcel, endPointHd];
 const detailHeaders = [acceptStar, actionDetail, endPointHd];
 const xmlHeaders = [acceptStar, actionXml, endPointHd];
 const relatedHeaders = [actionRelated, endPointHd];
 const tbssHeaders = [actionSearch, endPointHd];
-const pitwListHeaders = [acceptEncSpaced, actionSearch, endPointTncn, refererTncn];
-const pitwXmlHeaders = [acceptEncSpaced, actionEmpty, endPointTncn, refererTncn];
+const pitwListHeaders = [actionSearch];
+const pitwXmlHeaders = [actionEmpty];
 
 const collection = {
   info: {
     _postman_id: 'hddt-healthcheck-001',
     name: 'HoaDonDienTu - Healthcheck',
     description: [
-      'Healthcheck API hoadondientu.gdt.gov.vn/api — query/header khớp call site production.',
+      'Healthcheck API hoadondientu.gdt.gov.vn/api — query/header khớp call site production + request-id UUID.',
+      '',
+      'Họ proxy (Chrome/120, Accept JSON): captcha, authenticate, profile, dsdkts, guest, relative.',
+      'Họ crawler HĐ (Chrome/106, Action/End-Point): excel, detail, xml, related, TBSS. Không Cookie jar.',
+      'Họ PITW (Chrome/150 Edg): Referer TNCN; Cookie chỉ khi pitw_cookie.',
       '',
       'Guest: hdon + (khmshdon==6 ? tdlap : tgtttbso). FE kiem-tra-hoa-don + routes/index.js.',
       'Excel: Action "Xuất hóa đơn (hóa đơn mua vào)"; sco search thêm ttxly==8 (Node crawl-excel).',
       'purchase dùng export-excel-sold?type=purchase; sold không gửi type.',
       'Detail: Action "Xem hóa đơn (hóa đơn bán ra)". XML: Action C# "Xuất xml (hóa đơn mua vào)".',
-      'Related: Action "Xem thông tin liên quan (hóa đơn bán ra)". Relative: Bearer only.',
+      'Related: Action "Xem thông tin liên quan (hóa đơn bán ra)". Relative: Bearer only (proxy).',
       'TBSS: sort ngay:desc,so:desc; search ngay=ge/le; size 50; Action Tìm kiếm.',
       'PITW: nlap ISO (VN 00:00 / 23:59:59.999); size 50. Không gọi pitw/export-excel (chỉ config).',
       'XML PITW: Action rỗng + Referer tra-cuu-chung-tu-tncn. Cookie inject run.js nếu pitw_cookie.',
@@ -359,6 +450,7 @@ const collection = {
     ].join('\n'),
     schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
   },
+  protocolProfileBehavior: ppbNoFingerprint,
   variable: [
     { key: 'baseUrl', value: 'https://hoadondientu.gdt.gov.vn' },
     { key: 'captchaBaseUrl', value: 'https://captcha.minvoice.com.vn' },
@@ -369,210 +461,134 @@ const collection = {
 collection.item.push({
   name: '01_PUBLIC',
   item: [
-    {
-      name: '01 GET portal',
-      event: testEvent(assertPortal),
-      request: {
-        method: 'GET',
-        header: [
-          { key: 'User-Agent', value: ua },
-          { key: 'Accept', value: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
-          { key: 'Accept-Language', value: 'vi' },
-          { key: 'request-id', value: '{{$guid}}' },
-        ],
-        url: {
-          raw: '{{baseUrl}}/',
-          protocol: 'https',
-          host: ['hoadondientu', 'gdt', 'gov', 'vn'],
-          path: [''],
-        },
-      },
-    },
-    {
-      name: '02 GET /api/captcha',
-      event: testEvent(assertCaptchaJson),
-      request: {
-        method: 'GET',
-        header: headersTct(),
-        url: tctUrl(['captcha']),
-      },
-    },
-    {
-      name: '03 GET /api/category/public/dsdkts/{mst}/manager',
-      event: testEvent(assertCategory),
-      request: {
-        method: 'GET',
-        header: headersTct(),
-        url: tctUrl(['category', 'public', 'dsdkts', '{{test_mst}}', 'manager']),
-      },
-    },
+    itemReq('01 GET portal', {
+      method: 'GET',
+      header: headersPortal(),
+      url: portalUrl(),
+    }, assertPortal),
+    itemReq('02 GET /api/captcha', {
+      method: 'GET',
+      header: headersProxy(),
+      url: tctUrl(['captcha']),
+    }, assertCaptchaJson),
+    itemReq('03 GET /api/category/public/dsdkts/{mst}/manager', {
+      method: 'GET',
+      header: headersProxy(),
+      url: tctUrl(['category', 'public', 'dsdkts', '{{test_mst}}', 'manager']),
+    }, assertCategory),
   ],
 });
 
 collection.item.push({
   name: '02_LOGIN',
   item: [
-    {
-      name: '01 GET portal',
-      event: testEvent(assertPortal),
-      request: {
-        method: 'GET',
-        header: [
-          { key: 'User-Agent', value: ua },
-          { key: 'Accept', value: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
-          { key: 'request-id', value: '{{$guid}}' },
-        ],
-        url: {
-          raw: '{{baseUrl}}/',
-          protocol: 'https',
-          host: ['hoadondientu', 'gdt', 'gov', 'vn'],
-          path: [''],
-        },
+    itemReq('01 GET portal', {
+      method: 'GET',
+      header: headersPortal(),
+      url: portalUrl(),
+    }, assertPortal, { cookies: true }),
+    itemReq('02 GET /api/captcha', {
+      method: 'GET',
+      header: headersProxy(),
+      url: tctUrl(['captcha']),
+    }, assertCaptchaJson, { cookies: true }),
+    itemReq('03 OCR tax_invoice_gov', {
+      method: 'POST',
+      header: [
+        { key: 'Accept', value: '*/*' },
+        { key: 'Content-Type', value: 'application/json' },
+        requestId,
+      ],
+      body: {
+        mode: 'raw',
+        raw: '{}',
+        options: { raw: { language: 'json' } },
       },
-    },
-    {
-      name: '02 GET /api/captcha',
-      event: testEvent(assertCaptchaJson),
-      request: {
-        method: 'GET',
-        header: headersTct(),
-        url: tctUrl(['captcha']),
+      url: '{{captchaBaseUrl}}/api/ocrcaptcha/tax_invoice_gov',
+      description: 'Newman rewrite sang postman-echo; OCR thật chạy trong run.js (multipart SVG).',
+    }, assertOcrTrace),
+    itemReq('04 POST /api/security-taxpayer/authenticate', {
+      method: 'POST',
+      header: headersProxy([{ key: 'Content-Type', value: 'application/json' }]),
+      body: {
+        mode: 'raw',
+        raw: JSON.stringify(
+          {
+            username: '{{hddt_username}}',
+            password: '{{hddt_password}}',
+            ckey: '{{hddt_ckey}}',
+            cvalue: '{{hddt_cvalue}}',
+          },
+          null,
+          2
+        ),
+        options: { raw: { language: 'json' } },
       },
-    },
-    {
-      name: '03 OCR tax_invoice_gov',
-      event: testEvent(assertOcrTrace),
-      request: {
-        method: 'POST',
-        header: [
-          { key: 'Accept', value: '*/*' },
-          { key: 'Content-Type', value: 'application/json' },
-          { key: 'request-id', value: '{{$guid}}' },
-        ],
-        body: {
-          mode: 'raw',
-          raw: '{}',
-          options: { raw: { language: 'json' } },
-        },
-        url: '{{captchaBaseUrl}}/api/ocrcaptcha/tax_invoice_gov',
-        description: 'Newman rewrite sang postman-echo; OCR thật chạy trong run.js (multipart SVG).',
-      },
-    },
-    {
-      name: '04 POST /api/security-taxpayer/authenticate',
-      event: testEvent(assertAuthenticate),
-      request: {
-        method: 'POST',
-        header: headersTct([{ key: 'Content-Type', value: 'application/json' }]),
-        body: {
-          mode: 'raw',
-          raw: JSON.stringify(
-            {
-              username: '{{hddt_username}}',
-              password: '{{hddt_password}}',
-              ckey: '{{hddt_ckey}}',
-              cvalue: '{{hddt_cvalue}}',
-            },
-            null,
-            2
-          ),
-          options: { raw: { language: 'json' } },
-        },
-        url: tctUrl(['security-taxpayer', 'authenticate']),
-      },
-    },
-    {
-      name: '05 GET /api/security-taxpayer/profile',
-      event: testEvent(assertProfile),
-      request: {
-        method: 'GET',
-        header: headersTct([{ key: 'Authorization', value: 'Bearer {{hddt_token}}' }]),
-        url: tctUrl(['security-taxpayer', 'profile'], [
-          { key: 'smiUsername', value: '{{hddt_username}}' },
-        ]),
-      },
-    },
+      url: tctUrl(['security-taxpayer', 'authenticate']),
+    }, assertAuthenticate, { cookies: true }),
+    itemReq('05 GET /api/security-taxpayer/profile', {
+      method: 'GET',
+      header: headersProxy([{ key: 'Authorization', value: 'Bearer {{hddt_token}}' }]),
+      url: tctUrl(['security-taxpayer', 'profile'], [
+        { key: 'smiUsername', value: '{{hddt_username}}' },
+      ]),
+    }, assertProfile, { cookies: true }),
   ],
 });
 
 collection.item.push({
   name: '03_GUEST',
   item: [
-    {
-      name: '01 GET portal',
-      event: testEvent(assertPortal),
-      request: {
-        method: 'GET',
-        header: [
-          { key: 'User-Agent', value: ua },
-          { key: 'Accept', value: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
-          { key: 'request-id', value: '{{$guid}}' },
+    itemReq('01 GET portal', {
+      method: 'GET',
+      header: headersPortal(),
+      url: portalUrl(),
+    }, assertPortal),
+    itemReq('02 GET /api/captcha', {
+      method: 'GET',
+      header: headersProxy(),
+      url: tctUrl(['captcha']),
+    }, assertCaptchaJson),
+    itemReq('03 OCR tax_invoice_gov', {
+      method: 'POST',
+      header: [
+        { key: 'Accept', value: '*/*' },
+        { key: 'Content-Type', value: 'application/json' },
+        requestId,
+      ],
+      body: {
+        mode: 'raw',
+        raw: '{}',
+        options: { raw: { language: 'json' } },
+      },
+      url: '{{captchaBaseUrl}}/api/ocrcaptcha/tax_invoice_gov',
+      description: 'Newman rewrite sang postman-echo; OCR thật chạy trong run.js.',
+    }, assertOcrTrace),
+    itemReq('04 GET /api/{from}/guest-invoices', {
+      method: 'GET',
+      header: headersProxy(),
+      description: [
+        'FE gửi hdon + tgtttbso + tdlap. Backend (routes/index.js) xóa tgtttbso nếu khmshdon==6, ngược lại xóa tdlap.',
+        'C# CrawlCheckInvoice luôn gửi hdon="0"+Serial[0] và tgtttbso. run.js áp logic Node/FE.',
+      ].join(' '),
+      url: {
+        raw: '{{baseUrl}}/api/{{guest_from}}/guest-invoices?cvalue={{hddt_cvalue}}&ckey={{hddt_ckey}}&khmshdon={{guest_khmshdon}}&hdon={{guest_hdon}}&nbmst={{guest_nbmst}}&khhdon={{guest_khhdon}}&shdon={{guest_shdon}}&tgtttbso={{guest_tgtttbso}}&tdlap={{guest_tdlap}}',
+        protocol: 'https',
+        host: ['hoadondientu', 'gdt', 'gov', 'vn'],
+        path: ['api', '{{guest_from}}', 'guest-invoices'],
+        query: [
+          { key: 'cvalue', value: '{{hddt_cvalue}}' },
+          { key: 'ckey', value: '{{hddt_ckey}}' },
+          { key: 'khmshdon', value: '{{guest_khmshdon}}' },
+          { key: 'hdon', value: '{{guest_hdon}}' },
+          { key: 'nbmst', value: '{{guest_nbmst}}' },
+          { key: 'khhdon', value: '{{guest_khhdon}}' },
+          { key: 'shdon', value: '{{guest_shdon}}' },
+          { key: 'tgtttbso', value: '{{guest_tgtttbso}}' },
+          { key: 'tdlap', value: '{{guest_tdlap}}' },
         ],
-        url: {
-          raw: '{{baseUrl}}/',
-          protocol: 'https',
-          host: ['hoadondientu', 'gdt', 'gov', 'vn'],
-          path: [''],
-        },
       },
-    },
-    {
-      name: '02 GET /api/captcha',
-      event: testEvent(assertCaptchaJson),
-      request: {
-        method: 'GET',
-        header: headersTct(),
-        url: tctUrl(['captcha']),
-      },
-    },
-    {
-      name: '03 OCR tax_invoice_gov',
-      event: testEvent(assertOcrTrace),
-      request: {
-        method: 'POST',
-        header: [
-          { key: 'Accept', value: '*/*' },
-          { key: 'Content-Type', value: 'application/json' },
-          { key: 'request-id', value: '{{$guid}}' },
-        ],
-        body: {
-          mode: 'raw',
-          raw: '{}',
-          options: { raw: { language: 'json' } },
-        },
-        url: '{{captchaBaseUrl}}/api/ocrcaptcha/tax_invoice_gov',
-        description: 'Newman rewrite sang postman-echo; OCR thật chạy trong run.js.',
-      },
-    },
-    {
-      name: '04 GET /api/{from}/guest-invoices',
-      event: testEvent(assertGuest),
-      request: {
-        method: 'GET',
-        header: headersTct(),
-        description: [
-          'FE gửi hdon + tgtttbso + tdlap. Backend (routes/index.js) xóa tgtttbso nếu khmshdon==6, ngược lại xóa tdlap.',
-          'C# CrawlCheckInvoice luôn gửi hdon="0"+Serial[0] và tgtttbso. run.js áp logic Node/FE.',
-        ].join(' '),
-        url: {
-          raw: '{{baseUrl}}/api/{{guest_from}}/guest-invoices?cvalue={{hddt_cvalue}}&ckey={{hddt_ckey}}&khmshdon={{guest_khmshdon}}&hdon={{guest_hdon}}&nbmst={{guest_nbmst}}&khhdon={{guest_khhdon}}&shdon={{guest_shdon}}&tgtttbso={{guest_tgtttbso}}&tdlap={{guest_tdlap}}',
-          protocol: 'https',
-          host: ['hoadondientu', 'gdt', 'gov', 'vn'],
-          path: ['api', '{{guest_from}}', 'guest-invoices'],
-          query: [
-            { key: 'cvalue', value: '{{hddt_cvalue}}' },
-            { key: 'ckey', value: '{{hddt_ckey}}' },
-            { key: 'khmshdon', value: '{{guest_khmshdon}}' },
-            { key: 'hdon', value: '{{guest_hdon}}' },
-            { key: 'nbmst', value: '{{guest_nbmst}}' },
-            { key: 'khhdon', value: '{{guest_khhdon}}' },
-            { key: 'shdon', value: '{{guest_shdon}}' },
-            { key: 'tgtttbso', value: '{{guest_tgtttbso}}' },
-            { key: 'tdlap', value: '{{guest_tdlap}}' },
-          ],
-        },
-      },
-    },
+    }, assertGuest),
   ],
 });
 
@@ -607,8 +623,8 @@ collection.item.push({
   item: [
     authGet('01 GET /api/query/invoices/related', ['query', 'invoices', 'related'], invoiceQs, relatedHeaders, assertRelated),
     authGet('02 GET /api/sco-query/invoices/related', ['sco-query', 'invoices', 'related'], invoiceQs, relatedHeaders, assertRelated),
-    authGet('03 GET /api/query/invoices/relative', ['query', 'invoices', 'relative'], invoiceQs, undefined, assertRelative),
-    authGet('04 GET /api/sco-query/invoices/relative', ['sco-query', 'invoices', 'relative'], invoiceQs, undefined, assertRelative),
+    authGet('03 GET /api/query/invoices/relative', ['query', 'invoices', 'relative'], invoiceQs, undefined, assertRelative, 'proxy'),
+    authGet('04 GET /api/sco-query/invoices/relative', ['sco-query', 'invoices', 'relative'], invoiceQs, undefined, assertRelative, 'proxy'),
   ],
 });
 
@@ -635,10 +651,10 @@ collection.item.push({
       { key: 'size', value: '{{page_size}}' },
       { key: 'search', value: '{{pitw_search}}' },
       { key: 'sort', value: 'nlap:desc' },
-    ], pitwListHeaders, assertPitwList),
+    ], pitwListHeaders, assertPitwList, 'pitw'),
     authGet('02 GET /api/pitw/export-xml', ['pitw', 'export-xml'], [
       { key: 'hsgoc', value: '{{pitw_hsgoc}}' },
-    ], pitwXmlHeaders, assertPitwXml),
+    ], pitwXmlHeaders, assertPitwXml, 'pitw'),
   ],
 });
 

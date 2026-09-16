@@ -4,7 +4,9 @@
   "values": [
     { "key": "baseUrl", "value": "https://hoadondientu.gdt.gov.vn", "enabled": true },
     { "key": "captchaBaseUrl", "value": "https://captcha.minvoice.com.vn", "enabled": true },
-    { "key": "userAgent", "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0", "enabled": true },
+    { "key": "userAgentProxy", "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "enabled": true },
+    { "key": "userAgentCrawl", "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36", "enabled": true },
+    { "key": "userAgentPitw", "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 Edg/150.0.0.0", "enabled": true },
     { "key": "test_mst", "value": "0100109106", "enabled": true },
     { "key": "hddt_username", "value": "", "enabled": true },
     { "key": "hddt_password", "value": "", "type": "secret", "enabled": true },
