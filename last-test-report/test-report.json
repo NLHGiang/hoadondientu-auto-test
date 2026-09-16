@@ -1,11 +1,11 @@
 {
   "title": "HoaDonDienTu Healthcheck",
-  "startedAt": "2026-09-16T03:28:06.360Z",
-  "finishedAt": "2026-09-16T03:28:22.392Z",
-  "durationMs": 16032,
+  "startedAt": "2026-09-16T03:51:05.467Z",
+  "finishedAt": "2026-09-16T03:51:20.981Z",
+  "durationMs": 15514,
   "collection": "HoaDonDienTu.healthcheck.postman_collection.json",
   "environment": "HoaDonDienTu.environment.json",
-  "reportDirName": "test-report-20260916-102806",
+  "reportDirName": "test-report-20260916-105105",
   "newmanError": null,
   "stats": {
     "iterations": {
@@ -41,7 +41,7 @@
     "assertions": {
       "total": 28,
       "pending": 0,
-      "failed": 21
+      "failed": 14
     },
     "testScripts": {
       "total": 28,
@@ -56,8 +56,8 @@
   },
   "summary": {
     "total": 28,
-    "passed": 7,
-    "failed": 21
+    "passed": 14,
+    "failed": 14
   },
   "cases": [
     {
@@ -80,12 +80,16 @@
           "value": "vi"
         },
         {
+          "key": "request-id",
+          "value": "fab03c62-69b5-461e-abf4-036e19a7c122"
+        },
+        {
           "key": "Cache-Control",
           "value": "no-cache"
         },
         {
           "key": "Postman-Token",
-          "value": "b25663f3-a047-48f6-8742-79579aef4514"
+          "value": "3d220cf1-3af6-471e-8aaa-6135023641e6"
         },
         {
           "key": "Host",
@@ -101,7 +105,7 @@
         }
       ],
       "responseCode": 200,
-      "responseTime": 247,
+      "responseTime": 209,
       "responseContentType": "text/html; charset=utf-8",
       "assertions": [
         {
@@ -141,12 +145,16 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "7e779c63-6e21-46ae-a02d-c4bf0eebbae8"
+        },
+        {
           "key": "Cache-Control",
           "value": "no-cache"
         },
         {
           "key": "Postman-Token",
-          "value": "354b6d4a-f2a0-4bb6-9092-0a4271cc37c7"
+          "value": "3a82cf77-7833-4b54-8ed6-e8092f012f84"
         },
         {
           "key": "Host",
@@ -166,7 +174,7 @@
         }
       ],
       "responseCode": 200,
-      "responseTime": 51,
+      "responseTime": 47,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -206,63 +214,8 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
-          "key": "Cache-Control",
-          "value": "no-cache"
-        },
-        {
-          "key": "Postman-Token",
-          "value": "5078d29b-5abe-416d-bb1b-c400e7ab88d2"
-        },
-        {
-          "key": "Host",
-          "value": "hoadondientu.gdt.gov.vn"
-        },
-        {
-          "key": "Accept-Encoding",
-          "value": "gzip, deflate, br"
-        },
-        {
-          "key": "Connection",
-          "value": "keep-alive"
-        },
-        {
-          "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
-        }
-      ],
-      "responseCode": 403,
-      "responseTime": 35,
-      "responseContentType": "application/json;charset=UTF-8",
-      "assertions": [
-        {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-          "error": {
-            "name": "AssertionError",
-            "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:3)"
-          }
-        }
-      ],
-      "failedAssertions": 1,
-      "error": null,
-      "responseFile": "./responses/003-01-public-03-get-api-category-public-dsdkts-mst-manager.txt"
-    },
-    {
-      "index": 4,
-      "folder": "02_LOGIN",
-      "name": "01 GET portal",
-      "method": "GET",
-      "url": "https://hoadondientu.gdt.gov.vn/",
-      "requestHeaders": [
-        {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0"
-        },
-        {
-          "key": "Accept",
-          "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+          "key": "request-id",
+          "value": "6eb6c505-3dfc-475d-99d0-8255a79cb8d9"
         },
         {
           "key": "Cache-Control",
@@ -270,7 +223,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "fae8c2ab-4341-462a-9bbd-957d4982fa97"
+          "value": "416dc5f5-b75c-48fd-b93b-40ed684ef667"
         },
         {
           "key": "Host",
@@ -290,7 +243,64 @@
         }
       ],
       "responseCode": 200,
-      "responseTime": 47,
+      "responseTime": 51,
+      "responseContentType": "application/json",
+      "assertions": [
+        {
+          "name": "dsdkts/manager: JSON object (TaxCode.get / TaxCodeService.searchTaxCode)",
+          "error": null
+        }
+      ],
+      "failedAssertions": 0,
+      "error": null,
+      "responseFile": "./responses/003-01-public-03-get-api-category-public-dsdkts-mst-manager.txt"
+    },
+    {
+      "index": 4,
+      "folder": "02_LOGIN",
+      "name": "01 GET portal",
+      "method": "GET",
+      "url": "https://hoadondientu.gdt.gov.vn/",
+      "requestHeaders": [
+        {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0"
+        },
+        {
+          "key": "Accept",
+          "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        },
+        {
+          "key": "request-id",
+          "value": "41c8a754-4f91-4b88-915b-45893187fd7a"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "key": "Postman-Token",
+          "value": "1026ce77-e25a-4d99-acee-b9225225312f"
+        },
+        {
+          "key": "Host",
+          "value": "hoadondientu.gdt.gov.vn"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Cookie",
+          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+        }
+      ],
+      "responseCode": 200,
+      "responseTime": 56,
       "responseContentType": "text/html; charset=utf-8",
       "assertions": [
         {
@@ -330,12 +340,16 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "07b26039-d512-4bcd-b04f-ea21535c75f9"
+        },
+        {
           "key": "Cache-Control",
           "value": "no-cache"
         },
         {
           "key": "Postman-Token",
-          "value": "a3680e68-e3d7-4a15-a98c-a2ef033a6162"
+          "value": "a24d3f97-8cb2-410f-b509-1141a9feb598"
         },
         {
           "key": "Host",
@@ -355,7 +369,7 @@
         }
       ],
       "responseCode": 200,
-      "responseTime": 41,
+      "responseTime": 37,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -383,6 +397,10 @@
           "value": "application/json"
         },
         {
+          "key": "request-id",
+          "value": "77dd38ca-2b25-4b3f-b519-10893f72779c"
+        },
+        {
           "key": "User-Agent",
           "value": "PostmanRuntime/7.39.1"
         },
@@ -392,7 +410,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "a63b1d6b-96f6-4f9b-9799-d4b41ab9e8e7"
+          "value": "571fcbb7-f662-45ed-9a9d-e03f9d8ff4b0"
         },
         {
           "key": "Host",
@@ -412,7 +430,7 @@
         }
       ],
       "responseCode": 200,
-      "responseTime": 533,
+      "responseTime": 534,
       "responseContentType": "application/json; charset=utf-8",
       "assertions": [
         {
@@ -452,6 +470,10 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "10909def-2a5c-4819-a5fd-ef8c1d1e9857"
+        },
+        {
           "key": "Content-Type",
           "value": "application/json"
         },
@@ -461,7 +483,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "c21cd68b-a89e-4455-9160-876df47acc79"
+          "value": "44ff69dd-c24f-4376-807d-b392fdbad328"
         },
         {
           "key": "Host",
@@ -485,21 +507,15 @@
         }
       ],
       "responseCode": 200,
-      "responseTime": 42,
-      "responseContentType": "text/html; charset=UTF-8",
+      "responseTime": 72,
+      "responseContentType": "application/json",
       "assertions": [
         {
-          "name": "FAIL: HTML WAF / Request Rejected",
-          "error": {
-            "name": "AssertionError",
-            "index": 0,
-            "test": "FAIL: HTML WAF / Request Rejected",
-            "message": "CQT trả HTML thay vì payload repo expect",
-            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:7)"
-          }
+          "name": "authenticate: có token (CrawlEInvoiceLoginService / loginOnlyViaProxy)",
+          "error": null
         }
       ],
-      "failedAssertions": 1,
+      "failedAssertions": 0,
       "error": null,
       "responseFile": "./responses/007-02-login-04-post-api-security-taxpayer-authenticate.txt"
     },
@@ -531,8 +547,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "de3e1c71-4199-4373-9751-43e55943b7c8"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Cache-Control",
@@ -540,66 +560,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "3c69135e-6c84-4c12-bc74-ced072bcc055"
-        },
-        {
-          "key": "Host",
-          "value": "hoadondientu.gdt.gov.vn"
-        },
-        {
-          "key": "Accept-Encoding",
-          "value": "gzip, deflate, br"
-        },
-        {
-          "key": "Connection",
-          "value": "keep-alive"
-        },
-        {
-          "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
-        }
-      ],
-      "responseCode": 403,
-      "responseTime": 67,
-      "responseContentType": "application/json;charset=UTF-8",
-      "assertions": [
-        {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-          "error": {
-            "name": "AssertionError",
-            "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:8)"
-          }
-        }
-      ],
-      "failedAssertions": 1,
-      "error": null,
-      "responseFile": "./responses/008-02-login-05-get-api-security-taxpayer-profile.txt"
-    },
-    {
-      "index": 9,
-      "folder": "03_GUEST",
-      "name": "01 GET portal",
-      "method": "GET",
-      "url": "https://hoadondientu.gdt.gov.vn/",
-      "requestHeaders": [
-        {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0"
-        },
-        {
-          "key": "Accept",
-          "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "no-cache"
-        },
-        {
-          "key": "Postman-Token",
-          "value": "229e534c-9d3f-4c81-a65c-756da611d6cf"
+          "value": "6b74239c-bcc0-4a00-8f0e-72876474b236"
         },
         {
           "key": "Host",
@@ -619,7 +580,64 @@
         }
       ],
       "responseCode": 200,
-      "responseTime": 48,
+      "responseTime": 35,
+      "responseContentType": "application/json",
+      "assertions": [
+        {
+          "name": "profile: username (fetchTaxpayerProfileViaProxy)",
+          "error": null
+        }
+      ],
+      "failedAssertions": 0,
+      "error": null,
+      "responseFile": "./responses/008-02-login-05-get-api-security-taxpayer-profile.txt"
+    },
+    {
+      "index": 9,
+      "folder": "03_GUEST",
+      "name": "01 GET portal",
+      "method": "GET",
+      "url": "https://hoadondientu.gdt.gov.vn/",
+      "requestHeaders": [
+        {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0"
+        },
+        {
+          "key": "Accept",
+          "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        },
+        {
+          "key": "request-id",
+          "value": "4b01add5-b9e6-4181-8b59-374d83375090"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "key": "Postman-Token",
+          "value": "2ab530fa-8dfd-46e4-aaf5-ba298f9938ab"
+        },
+        {
+          "key": "Host",
+          "value": "hoadondientu.gdt.gov.vn"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Cookie",
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
+        }
+      ],
+      "responseCode": 200,
+      "responseTime": 50,
       "responseContentType": "text/html; charset=utf-8",
       "assertions": [
         {
@@ -659,12 +677,16 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "75efea31-c895-4c5a-8800-d5b77b5e43ff"
+        },
+        {
           "key": "Cache-Control",
           "value": "no-cache"
         },
         {
           "key": "Postman-Token",
-          "value": "ca2e2e28-2b0b-4bc4-957c-86894b04ab27"
+          "value": "d31d187b-7016-475e-8ab0-37c233676bc0"
         },
         {
           "key": "Host",
@@ -680,25 +702,19 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
       "responseCode": 200,
-      "responseTime": 39,
-      "responseContentType": "text/html; charset=UTF-8",
+      "responseTime": 256,
+      "responseContentType": "application/json",
       "assertions": [
         {
-          "name": "FAIL: HTML WAF / Request Rejected",
-          "error": {
-            "name": "AssertionError",
-            "index": 0,
-            "test": "FAIL: HTML WAF / Request Rejected",
-            "message": "CQT trả HTML thay vì payload repo expect",
-            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:10)"
-          }
+          "name": "captcha: JSON key + content (proxy-login-client captchaViaProxy)",
+          "error": null
         }
       ],
-      "failedAssertions": 1,
+      "failedAssertions": 0,
       "error": null,
       "responseFile": "./responses/010-03-guest-02-get-api-captcha.txt"
     },
@@ -718,6 +734,10 @@
           "value": "application/json"
         },
         {
+          "key": "request-id",
+          "value": "f2960ecf-baf9-44c1-9ef6-617f4c92e969"
+        },
+        {
           "key": "User-Agent",
           "value": "PostmanRuntime/7.39.1"
         },
@@ -727,7 +747,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "f0b0ece9-96d6-44af-8eb4-27a76336839f"
+          "value": "1c27bf4e-ceff-4aef-86b7-5381f38986d1"
         },
         {
           "key": "Host",
@@ -747,11 +767,11 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 433 ký tự — ẩn trong report]"
+          "value": "[đã gửi 421 ký tự — ẩn trong report]"
         }
       ],
       "responseCode": 200,
-      "responseTime": 351,
+      "responseTime": 327,
       "responseContentType": "application/json; charset=utf-8",
       "assertions": [
         {
@@ -768,7 +788,7 @@
       "folder": "03_GUEST",
       "name": "04 GET /api/{from}/guest-invoices",
       "method": "GET",
-      "url": "https://hoadondientu.gdt.gov.vn/api/sco-query/guest-invoices?cvalue=8HWDTT&ckey=6aaa0cc93ea3b029a85a8d2d&khmshdon=1&hdon=01&nbmst=3603914658&khhdon=C25MDH&shdon=122252&tgtttbso=804339800",
+      "url": "https://hoadondientu.gdt.gov.vn/api/sco-query/guest-invoices?cvalue=H6XDRV&ckey=6aaa122f3ea3b029a85c3d9d&khmshdon=1&hdon=01&nbmst=3603914658&khhdon=C25MDH&shdon=122252&tgtttbso=804339800",
       "requestHeaders": [
         {
           "key": "User-Agent",
@@ -791,12 +811,16 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "14f377d4-16a9-4ec4-a50f-cd59a18b1d2f"
+        },
+        {
           "key": "Cache-Control",
           "value": "no-cache"
         },
         {
           "key": "Postman-Token",
-          "value": "72ea0511-9e4b-453d-92b1-e8e77077b1a6"
+          "value": "a9cb85a1-eb6b-4ba2-96ec-454b70234372"
         },
         {
           "key": "Host",
@@ -812,11 +836,11 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
       "responseCode": 200,
-      "responseTime": 317,
+      "responseTime": 55,
       "responseContentType": "text/html; charset=UTF-8",
       "assertions": [
         {
@@ -858,8 +882,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "d39abae2-deb1-4f08-8b1e-2a3a8cfc1de4"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Accept",
@@ -883,7 +911,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "0f4245dd-8012-48d2-a5ba-bc09e3781869"
+          "value": "de196d9b-fcd8-47c7-8129-4008feaefcbb"
         },
         {
           "key": "Host",
@@ -895,21 +923,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 90,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 77,
+      "responseContentType": "text/html; charset=UTF-8",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "FAIL: HTML WAF / Request Rejected",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:13)"
+            "test": "FAIL: HTML WAF / Request Rejected",
+            "message": "CQT trả HTML thay vì payload repo expect",
+            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:13)"
           }
         }
       ],
@@ -941,8 +969,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "15f3f9f3-4a24-4126-a99a-bebe38be9090"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Accept",
@@ -966,7 +998,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "6c2d011c-4a85-4f78-b163-8928cd40e70b"
+          "value": "dc82da80-9669-404e-a994-0bb83f95e8df"
         },
         {
           "key": "Host",
@@ -978,21 +1010,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 43,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 70,
+      "responseContentType": "text/html; charset=UTF-8",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "FAIL: HTML WAF / Request Rejected",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:14)"
+            "test": "FAIL: HTML WAF / Request Rejected",
+            "message": "CQT trả HTML thay vì payload repo expect",
+            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:14)"
           }
         }
       ],
@@ -1024,8 +1056,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "95ac5d51-5b9b-4142-81d8-1d1b350c43ae"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Accept",
@@ -1049,7 +1085,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "a7b216a2-9775-4863-9c62-c7ce912a9bf8"
+          "value": "9405d14c-6d95-4afe-81b2-3c0aa6bf36a1"
         },
         {
           "key": "Host",
@@ -1061,21 +1097,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 32,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 72,
+      "responseContentType": "text/html; charset=UTF-8",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "FAIL: HTML WAF / Request Rejected",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:15)"
+            "test": "FAIL: HTML WAF / Request Rejected",
+            "message": "CQT trả HTML thay vì payload repo expect",
+            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:15)"
           }
         }
       ],
@@ -1107,8 +1143,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "cf07c220-262e-4561-9235-00dda18b87da"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Accept",
@@ -1132,7 +1172,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "9e046237-a851-4845-9712-b6ceb2f34adf"
+          "value": "72959184-cdb8-4c67-86c5-4a42aca9332f"
         },
         {
           "key": "Host",
@@ -1144,21 +1184,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 31,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 67,
+      "responseContentType": "text/html; charset=UTF-8",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "FAIL: HTML WAF / Request Rejected",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:16)"
+            "test": "FAIL: HTML WAF / Request Rejected",
+            "message": "CQT trả HTML thay vì payload repo expect",
+            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:16)"
           }
         }
       ],
@@ -1190,8 +1230,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "58d056a4-c02c-429d-ab2b-24bc09ff2fa6"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Accept",
@@ -1211,7 +1255,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "b6d70dd7-11f6-4de8-ad67-a72b6acef0aa"
+          "value": "273aa2c0-b773-4037-9aa1-74c9fd717eff"
         },
         {
           "key": "Host",
@@ -1227,21 +1271,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 34,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 111,
+      "responseContentType": "text/html; charset=UTF-8",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "FAIL: HTML WAF / Request Rejected",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:17)"
+            "test": "FAIL: HTML WAF / Request Rejected",
+            "message": "CQT trả HTML thay vì payload repo expect",
+            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:17)"
           }
         }
       ],
@@ -1273,8 +1317,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "8c1193e7-6bec-465a-9e2e-b552403a5a28"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Accept",
@@ -1294,7 +1342,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "4cfea7cf-6591-40f6-aa22-aa8fec16b587"
+          "value": "ac4e3548-6244-4378-8676-17f74e8de315"
         },
         {
           "key": "Host",
@@ -1310,21 +1358,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 31,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 96,
+      "responseContentType": "text/html; charset=UTF-8",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "FAIL: HTML WAF / Request Rejected",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:18)"
+            "test": "FAIL: HTML WAF / Request Rejected",
+            "message": "CQT trả HTML thay vì payload repo expect",
+            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:18)"
           }
         }
       ],
@@ -1356,8 +1404,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "88cc897e-e62a-44d5-8c93-865d497fe531"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Accept",
@@ -1377,7 +1429,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "0f35227f-55b0-4538-a07a-81eb21de48d0"
+          "value": "e98eef00-66f5-4bd6-8354-f7546c40bc20"
         },
         {
           "key": "Host",
@@ -1393,21 +1445,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 28,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 64,
+      "responseContentType": "text/html; charset=UTF-8",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "FAIL: HTML WAF / Request Rejected",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:19)"
+            "test": "FAIL: HTML WAF / Request Rejected",
+            "message": "CQT trả HTML thay vì payload repo expect",
+            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:19)"
           }
         }
       ],
@@ -1439,8 +1491,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "141cfc0c-cd08-4113-9c0c-8f5a0c38ec81"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Accept",
@@ -1460,7 +1516,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "a7532c25-ac5c-49ff-8188-5d5598afd9da"
+          "value": "73e3622f-8951-4c17-8d82-7a568a75e100"
         },
         {
           "key": "Host",
@@ -1476,21 +1532,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 25,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 500,
+      "responseTime": 83,
+      "responseContentType": "application/json",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "HTTP 200",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:20)"
+            "test": "HTTP 200",
+            "message": "expected 500 to deeply equal 200",
+            "stack": "AssertionError: expected 500 to deeply equal 200\n   at Object.eval sandbox-script.js:1:20)"
           }
         }
       ],
@@ -1526,8 +1582,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "64e171a3-5640-4f1b-95f4-7e4b92c3c9f6"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Action",
@@ -1543,7 +1603,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "2226ddbe-1831-43e8-b57c-b8d0506790ff"
+          "value": "d58c4266-7f3c-4f80-a1c7-fc3de3fbec14"
         },
         {
           "key": "Host",
@@ -1559,21 +1619,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 32,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 45,
+      "responseContentType": "text/html; charset=UTF-8",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "FAIL: HTML WAF / Request Rejected",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:21)"
+            "test": "FAIL: HTML WAF / Request Rejected",
+            "message": "CQT trả HTML thay vì payload repo expect",
+            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:21)"
           }
         }
       ],
@@ -1609,8 +1669,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "5954702e-b5fd-469e-9857-1a3f16e98895"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Action",
@@ -1626,7 +1690,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "69da01e5-6724-4a9b-b15e-9c437f21f25c"
+          "value": "c7971f4d-1394-4288-b052-58f394ca7c26"
         },
         {
           "key": "Host",
@@ -1642,21 +1706,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 30,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 74,
+      "responseContentType": "text/html; charset=UTF-8",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "FAIL: HTML WAF / Request Rejected",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:22)"
+            "test": "FAIL: HTML WAF / Request Rejected",
+            "message": "CQT trả HTML thay vì payload repo expect",
+            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:22)"
           }
         }
       ],
@@ -1692,8 +1756,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "48310f31-3661-4aac-b056-369b3681c2ae"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Cache-Control",
@@ -1701,7 +1769,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "6b61212a-5947-4b24-821d-e281e6f7daef"
+          "value": "272e5fa0-3e46-45a8-adfe-05835b2217c8"
         },
         {
           "key": "Host",
@@ -1717,21 +1785,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 28,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 500,
+      "responseTime": 69,
+      "responseContentType": "application/json",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "HTTP 200",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:23)"
+            "test": "HTTP 200",
+            "message": "expected 500 to deeply equal 200",
+            "stack": "AssertionError: expected 500 to deeply equal 200\n   at Object.eval sandbox-script.js:1:23)"
           }
         }
       ],
@@ -1767,8 +1835,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "40394e53-bc30-47da-9f77-d86d6b03a52d"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Cache-Control",
@@ -1776,7 +1848,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "a544fb8e-d3fd-414e-8e10-bb72a0c4b352"
+          "value": "44d3aed0-826f-47b5-a533-84e7d43e7c5c"
         },
         {
           "key": "Host",
@@ -1792,21 +1864,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 27,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 500,
+      "responseTime": 39,
+      "responseContentType": "application/json",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "HTTP 200",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:24)"
+            "test": "HTTP 200",
+            "message": "expected 500 to deeply equal 200",
+            "stack": "AssertionError: expected 500 to deeply equal 200\n   at Object.eval sandbox-script.js:1:24)"
           }
         }
       ],
@@ -1842,8 +1914,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "980e5cc9-da0f-4481-8696-c4315162f45c"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Action",
@@ -1859,7 +1935,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "eec74823-5704-4500-93bf-fc63a6da5a8f"
+          "value": "c62a6d2e-6e64-485f-9376-762418128bf6"
         },
         {
           "key": "Host",
@@ -1875,25 +1951,19 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 27,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 93,
+      "responseContentType": "application/json",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-          "error": {
-            "name": "AssertionError",
-            "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:25)"
-          }
+          "name": "TBSS: datas[] + total (consume/hdtbssresExcel)",
+          "error": null
         }
       ],
-      "failedAssertions": 1,
+      "failedAssertions": 0,
       "error": null,
       "responseFile": "./responses/025-08-tbss-01-get-api-explanation-tbssdts-signed-notifications.txt"
     },
@@ -1925,8 +1995,12 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "request-id",
+          "value": "09e248ef-97cc-4975-9da2-af225f632aa8"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Action",
@@ -1942,7 +2016,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "537d7be2-2307-4b43-8295-f7bb8e8d308d"
+          "value": "ab37bac6-76ad-47c6-b941-91942d8cb705"
         },
         {
           "key": "Host",
@@ -1958,25 +2032,19 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 1033,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 48,
+      "responseContentType": "application/json",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-          "error": {
-            "name": "AssertionError",
-            "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:26)"
-          }
+          "name": "TBSS: datas[] + total (consume/hdtbssresExcel)",
+          "error": null
         }
       ],
-      "failedAssertions": 1,
+      "failedAssertions": 0,
       "error": null,
       "responseFile": "./responses/026-08-tbss-02-get-api-sco-explanation-tbssdts-signed-notifications.txt"
     },
@@ -2004,8 +2072,12 @@
           "value": "https://hoadondientu.gdt.gov.vn"
         },
         {
+          "key": "request-id",
+          "value": "727b0fcb-1134-43a4-ace5-ae8b787884fb"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Accept-Encoding",
@@ -2029,7 +2101,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "b54ae56a-ba07-4b50-aec1-31f4751d6097"
+          "value": "03eb52d8-2b7f-4216-bc21-1ca683909574"
         },
         {
           "key": "Host",
@@ -2041,25 +2113,19 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 35,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 200,
+      "responseTime": 47,
+      "responseContentType": "application/json",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-          "error": {
-            "name": "AssertionError",
-            "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:27)"
-          }
+          "name": "pitw: datas[] (parseCrawlResult / chungTuTncnHeader)",
+          "error": null
         }
       ],
-      "failedAssertions": 1,
+      "failedAssertions": 0,
       "error": null,
       "responseFile": "./responses/027-09-pitw-01-get-api-pitw.txt"
     },
@@ -2087,8 +2153,12 @@
           "value": "https://hoadondientu.gdt.gov.vn"
         },
         {
+          "key": "request-id",
+          "value": "c94cb068-4955-43ee-ace6-edd9c390f250"
+        },
+        {
           "key": "Authorization",
-          "value": "[đã gửi 7 ký tự — ẩn trong report]"
+          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "Accept-Encoding",
@@ -2112,7 +2182,7 @@
         },
         {
           "key": "Postman-Token",
-          "value": "766467fe-72a8-41d1-b414-e021f7d52730"
+          "value": "3b63d332-3fa1-4159-8263-17114288990b"
         },
         {
           "key": "Host",
@@ -2124,21 +2194,21 @@
         },
         {
           "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "[đã gửi 523 ký tự — ẩn trong report]"
         }
       ],
-      "responseCode": 403,
-      "responseTime": 26,
-      "responseContentType": "application/json;charset=UTF-8",
+      "responseCode": 500,
+      "responseTime": 42,
+      "responseContentType": "application/json",
       "assertions": [
         {
-          "name": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
+          "name": "HTTP 200",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "message": "Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.",
-            "stack": "AssertionError: Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\n   at Object.eval sandbox-script.js:1:28)"
+            "test": "HTTP 200",
+            "message": "expected 500 to deeply equal 200",
+            "stack": "AssertionError: expected 500 to deeply equal 200\n   at Object.eval sandbox-script.js:1:28)"
           }
         }
       ],

@@ -1,1 +1,1 @@
-{"status":403,"message":"Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn."}
+{"timestamp":"16/09/2026 10:51:18","message":"Failed to convert value of type 'java.lang.String' to required type 'byte'; nested exception is java.lang.NumberFormatException: For input string: \"\"","details":"","path":"uri=/invoices/relative","requestId":"4f017399-20c5-457c-85f0-f9b8cb031ad0"}

@@ -1,1 +1,1 @@
-{"status":403,"message":"Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn."}
+{"mst":"0100109106","macqt":"9901","tencqt":"Chi cục Thuế Doanh nghiệp lớn","tennnt":"TẬP ĐOÀN CÔNG NGHIỆP - VIỄN THÔNG QUÂN ĐỘI","tthai":"00","loainnt":"KHAC","lnnt":"0100","dctsdchi":"Số 5, Phố Nguyễn Hữu An","dctstinh":"TP Hà Nội","dctsthuyen":"","dctstxa":"","dctstinhten":"TP Hà Nội","dctshuyenten":"","dctsxaten":"Phường Cầu Giấy"}
