@@ -90,6 +90,10 @@
               {
                 "key": "Accept-Language",
                 "value": "vi"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -194,6 +198,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -299,6 +307,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -393,6 +405,10 @@
               {
                 "key": "Accept",
                 "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -497,6 +513,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -540,6 +560,10 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "body": {
@@ -643,6 +667,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               },
               {
                 "key": "Content-Type",
@@ -765,6 +793,10 @@
                 "value": "{{baseUrl}}/"
               },
               {
+                "key": "request-id",
+                "value": "{{$guid}}"
+              },
+              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               }
@@ -864,6 +896,10 @@
               {
                 "key": "Accept",
                 "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -968,6 +1004,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "url": {
@@ -1011,6 +1051,10 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "body": {
@@ -1115,6 +1159,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               }
             ],
             "description": "FE gửi hdon + tgtttbso + tdlap. Backend (routes/index.js) xóa tgtttbso nếu khmshdon==6, ngược lại xóa tdlap. C# CrawlCheckInvoice luôn gửi hdon=\"0\"+Serial[0] và tgtttbso. run.js áp logic Node/FE.",
@@ -1262,6 +1310,10 @@
                 "value": "{{baseUrl}}/"
               },
               {
+                "key": "request-id",
+                "value": "{{$guid}}"
+              },
+              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -1394,6 +1446,10 @@
                 "value": "{{baseUrl}}/"
               },
               {
+                "key": "request-id",
+                "value": "{{$guid}}"
+              },
+              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -1524,6 +1580,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -1660,6 +1720,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -1804,6 +1868,10 @@
                 "value": "{{baseUrl}}/"
               },
               {
+                "key": "request-id",
+                "value": "{{$guid}}"
+              },
+              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -1939,6 +2007,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -2082,6 +2154,10 @@
                 "value": "{{baseUrl}}/"
               },
               {
+                "key": "request-id",
+                "value": "{{$guid}}"
+              },
+              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -2216,6 +2292,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -2364,6 +2444,10 @@
                 "value": "{{baseUrl}}/"
               },
               {
+                "key": "request-id",
+                "value": "{{$guid}}"
+              },
+              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -2499,6 +2583,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -2637,6 +2725,10 @@
                 "value": "{{baseUrl}}/"
               },
               {
+                "key": "request-id",
+                "value": "{{$guid}}"
+              },
+              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               }
@@ -2763,6 +2855,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -2900,6 +2996,10 @@
                 "value": "{{baseUrl}}/"
               },
               {
+                "key": "request-id",
+                "value": "{{$guid}}"
+              },
+              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -3032,6 +3132,10 @@
               {
                 "key": "Referer",
                 "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",
@@ -3169,6 +3273,10 @@
                 "value": "{{baseUrl}}"
               },
               {
+                "key": "request-id",
+                "value": "{{$guid}}"
+              },
+              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -3301,6 +3409,10 @@
               {
                 "key": "Origin",
                 "value": "{{baseUrl}}"
+              },
+              {
+                "key": "request-id",
+                "value": "{{$guid}}"
               },
               {
                 "key": "Authorization",

@@ -58,7 +58,7 @@ Thiếu token / thiếu `inv_*` / thiếu `pitw_hsgoc` → request vẫn chạy 
 
 Từng folder: `npm run test:excel` | `test:detail` | `test:xml` | `test:related` | `test:tbss` | `test:pitw`.
 
-`run.js` gỡ header `Postman-Token` trước khi gửi. OCR captcha SVG: Newman không POST multipart được — `run.js` gọi `lib/hddt-ocr-cli.js` (endpoint nội bộ `captcha.minvoice.com.vn`, **không** phải API TCT).
+`run.js` gỡ header `Postman-Token` trước khi gửi. Mọi request gắn `request-id` là UUID v4 tự sinh (ví dụ `559cadfe-0773-4847-8172-7432eec52498`). OCR captcha SVG: Newman không POST multipart được — `run.js` gọi `lib/hddt-ocr-cli.js` (endpoint nội bộ `captcha.minvoice.com.vn`, **không** phải API TCT).
 
 ## Folder
 
@@ -84,14 +84,15 @@ Mỗi lần chạy:
 test-report-YYYYMMDD-HHMMSS/   # lịch sử local, gitignore
 last-test-report/              # lần chạy cuối — commit/push git
   SOURCE.txt                   # tên thư mục timestamp nguồn
+  test-report.md               # xem trên git (GitHub/GitLab render)
   test-report.html
   test-report.json
   responses/
 ```
 
-Mở `test-report.html` **trong đúng thư mục** đó (link `./responses/...` là tương đối).
+Mở `test-report.md` trên git để xem summary + từng case. Mở `test-report.html` **trong đúng thư mục** đó (link `./responses/...` là tương đối).
 
-Trong HTML, `Authorization` / `Cookie` / password hiện `[đã gửi N ký tự — ẩn trong report]`. Newman đã gửi giá trị thật. Copy curl từ report **không replay** được phần đã ẩn.
+Trong report, `Authorization` / `Cookie` / password hiện `[đã gửi N ký tự — ẩn trong report]`. Newman đã gửi giá trị thật. Copy curl từ report **không replay** được phần đã ẩn.
 
 ## Expect — sai thì FAIL
 
@@ -170,7 +171,7 @@ Ghi trong `HoaDonDienTu.environment.json` hoặc `--env-var key=value` (CLI th�
 | `generate-collection.js` | Sinh Postman collection v2.1 |
 | `HoaDonDienTu.environment.json` | Env mặc định (secret để trống) |
 | `lib/hddt-ocr-cli.js` | OCR SVG `tax_invoice_gov` |
-| `lib/build-report.js` | HTML + JSON report |
+| `lib/build-report.js` | HTML + Markdown + JSON report |
 | `last-test-report/` | Report lần chạy cuối (git) |
 
 ## API TCT đang dùng (mSMI)

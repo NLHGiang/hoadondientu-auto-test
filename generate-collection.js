@@ -17,6 +17,7 @@ function headersTct(extra) {
     { key: 'Accept-Language', value: 'vi' },
     { key: 'Origin', value: origin },
     { key: 'Referer', value: `${origin}/` },
+    { key: 'request-id', value: '{{$guid}}' },
   ];
   if (!extra || !extra.length) return h;
   const keys = new Set(extra.map((x) => String(x.key).toLowerCase()));
@@ -377,6 +378,7 @@ collection.item.push({
           { key: 'User-Agent', value: ua },
           { key: 'Accept', value: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
           { key: 'Accept-Language', value: 'vi' },
+          { key: 'request-id', value: '{{$guid}}' },
         ],
         url: {
           raw: '{{baseUrl}}/',
@@ -418,6 +420,7 @@ collection.item.push({
         header: [
           { key: 'User-Agent', value: ua },
           { key: 'Accept', value: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
+          { key: 'request-id', value: '{{$guid}}' },
         ],
         url: {
           raw: '{{baseUrl}}/',
@@ -441,7 +444,11 @@ collection.item.push({
       event: testEvent(assertOcrTrace),
       request: {
         method: 'POST',
-        header: [{ key: 'Accept', value: '*/*' }, { key: 'Content-Type', value: 'application/json' }],
+        header: [
+          { key: 'Accept', value: '*/*' },
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'request-id', value: '{{$guid}}' },
+        ],
         body: {
           mode: 'raw',
           raw: '{}',
@@ -499,6 +506,7 @@ collection.item.push({
         header: [
           { key: 'User-Agent', value: ua },
           { key: 'Accept', value: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
+          { key: 'request-id', value: '{{$guid}}' },
         ],
         url: {
           raw: '{{baseUrl}}/',
@@ -522,7 +530,11 @@ collection.item.push({
       event: testEvent(assertOcrTrace),
       request: {
         method: 'POST',
-        header: [{ key: 'Accept', value: '*/*' }, { key: 'Content-Type', value: 'application/json' }],
+        header: [
+          { key: 'Accept', value: '*/*' },
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'request-id', value: '{{$guid}}' },
+        ],
         body: {
           mode: 'raw',
           raw: '{}',

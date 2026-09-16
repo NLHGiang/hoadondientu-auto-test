@@ -10,6 +10,7 @@
 const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { randomUUID } = require('crypto');
 const newman = require('newman');
 const { Url, RequestBody } = require('postman-collection');
 const { slugify } = require('./lib/slug');
@@ -201,6 +202,11 @@ function injectAuthenticate(request, hddtState, username, password) {
   setRawJsonBody(request, body);
 }
 
+function injectRequestId(request) {
+  if (!request?.headers || typeof request.headers.upsert !== 'function') return;
+  request.headers.upsert({ key: 'request-id', value: randomUUID() });
+}
+
 function stripNewmanFingerprint(request) {
   if (!request?.headers || typeof request.headers.remove !== 'function') return;
   request.headers.remove('Postman-Token');
@@ -379,6 +385,7 @@ function main() {
 
     const htmlPath = writeReport(reportDir, meta, cases);
     console.log(`\nHTML report: ${htmlPath}`);
+    console.log(`   Markdown report: ${path.join(reportDir, 'test-report.md')}`);
     console.log(`   JSON manifest: ${path.join(reportDir, 'test-report.json')}`);
     console.log(`   Response files: ${path.join(reportDir, 'responses')}/`);
 
@@ -405,6 +412,7 @@ function main() {
   runner.on('beforeRequest', (err, args) => {
     if (err || !args?.request) return;
     stripNewmanFingerprint(args.request);
+    injectRequestId(args.request);
     const name = activeItemName;
 
     if (ITEM_OCR.test(name)) {
