@@ -1,0 +1,3352 @@
+{
+  "info": {
+    "_postman_id": "hddt-healthcheck-001",
+    "name": "HoaDonDienTu - Healthcheck",
+    "description": "Healthcheck API hoadondientu.gdt.gov.vn/api — query/header khớp call site production.\n\nGuest: hdon + (khmshdon==6 ? tdlap : tgtttbso). FE kiem-tra-hoa-don + routes/index.js.\nExcel: Action \"Xuất hóa đơn (hóa đơn mua vào)\"; sco search thêm ttxly==8 (Node crawl-excel).\npurchase dùng export-excel-sold?type=purchase; sold không gửi type.\nDetail: Action \"Xem hóa đơn (hóa đơn bán ra)\". XML: Action C# \"Xuất xml (hóa đơn mua vào)\".\nRelated: Action \"Xem thông tin liên quan (hóa đơn bán ra)\". Relative: Bearer only.\nTBSS: sort ngay:desc,so:desc; search ngay=ge/le; size 50; Action Tìm kiếm.\nPITW: nlap ISO (VN 00:00 / 23:59:59.999); size 50. Không gọi pitw/export-excel (chỉ config).\nXML PITW: Action rỗng + Referer tra-cuu-chung-tu-tncn. Cookie inject run.js nếu pitw_cookie.\n\nnpm test = 01_PUBLIC. npm run test:all = toàn bộ folder (login nếu có tài khoản).\nLogin: npm run test:login -- --env-var hddt_username=... --env-var hddt_password=...\n\nAssert theo logic repo: HTTP 200 + body đúng shape. WAF 403 / HTML WAF / 401 / JSON lỗi → FAIL.\nExcel: xlsx PK. Detail: id. XML: ZIP PK. Related: khhdon. TBSS/PITW: datas[]. Guest: ttxly hoặc body rỗng.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://hoadondientu.gdt.gov.vn"
+    },
+    {
+      "key": "captchaBaseUrl",
+      "value": "https://captcha.minvoice.com.vn"
+    }
+  ],
+  "item": [
+    {
+      "name": "01_PUBLIC",
+      "item": [
+        {
+          "name": "01 GET portal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked() && pm.response.code >= 400) {",
+                  "    pm.test(\"FAIL: HTML WAF\", function () {",
+                  "        pm.expect.fail(\"Portal bị HTML WAF\");",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"Portal HTTP 2xx/3xx\", function () {",
+                  "        pm.expect(pm.response.code).to.be.below(400);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "02 GET /api/captcha",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"captcha: JSON key + content (proxy-login-client captchaViaProxy)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        pm.expect(j.key, \"captcha.key\").to.be.ok;",
+                  "        pm.expect(j.content, \"captcha.content\").to.be.ok;",
+                  "        pm.environment.set(\"hddt_ckey\", String(j.key));",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/captcha",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "captcha"
+              ]
+            }
+          }
+        },
+        {
+          "name": "03 GET /api/category/public/dsdkts/{mst}/manager",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"dsdkts/manager: JSON object (TaxCode.get / TaxCodeService.searchTaxCode)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "        pm.expect(Array.isArray(j), \"không phải array\").to.be.false;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/category/public/dsdkts/{{test_mst}}/manager",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "category",
+                "public",
+                "dsdkts",
+                "{{test_mst}}",
+                "manager"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02_LOGIN",
+      "item": [
+        {
+          "name": "01 GET portal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked() && pm.response.code >= 400) {",
+                  "    pm.test(\"FAIL: HTML WAF\", function () {",
+                  "        pm.expect.fail(\"Portal bị HTML WAF\");",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"Portal HTTP 2xx/3xx\", function () {",
+                  "        pm.expect(pm.response.code).to.be.below(400);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "02 GET /api/captcha",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"captcha: JSON key + content (proxy-login-client captchaViaProxy)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        pm.expect(j.key, \"captcha.key\").to.be.ok;",
+                  "        pm.expect(j.content, \"captcha.content\").to.be.ok;",
+                  "        pm.environment.set(\"hddt_ckey\", String(j.key));",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/captcha",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "captcha"
+              ]
+            }
+          }
+        },
+        {
+          "name": "03 OCR tax_invoice_gov",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"OCR intercept HTTP 200 (postman-echo trace)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{captchaBaseUrl}}/api/ocrcaptcha/tax_invoice_gov",
+            "description": "Newman rewrite sang postman-echo; OCR thật chạy trong run.js (multipart SVG)."
+          }
+        },
+        {
+          "name": "04 POST /api/security-taxpayer/authenticate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"authenticate: có token (CrawlEInvoiceLoginService / loginOnlyViaProxy)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err && !j.token) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "        pm.expect(j.token, \"token\").to.be.ok;",
+                  "        pm.environment.set(\"hddt_token\", j.token);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{hddt_username}}\",\n  \"password\": \"{{hddt_password}}\",\n  \"ckey\": \"{{hddt_ckey}}\",\n  \"cvalue\": \"{{hddt_cvalue}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/security-taxpayer/authenticate",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "security-taxpayer",
+                "authenticate"
+              ]
+            }
+          }
+        },
+        {
+          "name": "05 GET /api/security-taxpayer/profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"profile: username (fetchTaxpayerProfileViaProxy)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err && !j.username) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "        pm.expect(j.username, \"profile.username\").to.be.a(\"string\");",
+                  "        pm.expect(j.username.length, \"profile.username\").to.be.above(0);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/security-taxpayer/profile?smiUsername={{hddt_username}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "security-taxpayer",
+                "profile"
+              ],
+              "query": [
+                {
+                  "key": "smiUsername",
+                  "value": "{{hddt_username}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03_GUEST",
+      "item": [
+        {
+          "name": "01 GET portal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked() && pm.response.code >= 400) {",
+                  "    pm.test(\"FAIL: HTML WAF\", function () {",
+                  "        pm.expect.fail(\"Portal bị HTML WAF\");",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"Portal HTTP 2xx/3xx\", function () {",
+                  "        pm.expect(pm.response.code).to.be.below(400);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "02 GET /api/captcha",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"captcha: JSON key + content (proxy-login-client captchaViaProxy)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        pm.expect(j.key, \"captcha.key\").to.be.ok;",
+                  "        pm.expect(j.content, \"captcha.content\").to.be.ok;",
+                  "        pm.environment.set(\"hddt_ckey\", String(j.key));",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/captcha",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "captcha"
+              ]
+            }
+          }
+        },
+        {
+          "name": "03 OCR tax_invoice_gov",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"OCR intercept HTTP 200 (postman-echo trace)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{captchaBaseUrl}}/api/ocrcaptcha/tax_invoice_gov",
+            "description": "Newman rewrite sang postman-echo; OCR thật chạy trong run.js."
+          }
+        },
+        {
+          "name": "04 GET /api/{from}/guest-invoices",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"guest-invoices: ttxly hoặc body rỗng (CrawlCheckInvoiceService)\", function () {",
+                  "        const text = tctText();",
+                  "        if (!text) return;",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err && j.ttxly == null) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "        pm.expect(j.ttxly != null, \"ttxly (C# retry nếu thiếu)\").to.be.true;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              }
+            ],
+            "description": "FE gửi hdon + tgtttbso + tdlap. Backend (routes/index.js) xóa tgtttbso nếu khmshdon==6, ngược lại xóa tdlap. C# CrawlCheckInvoice luôn gửi hdon=\"0\"+Serial[0] và tgtttbso. run.js áp logic Node/FE.",
+            "url": {
+              "raw": "{{baseUrl}}/api/{{guest_from}}/guest-invoices?cvalue={{hddt_cvalue}}&ckey={{hddt_ckey}}&khmshdon={{guest_khmshdon}}&hdon={{guest_hdon}}&nbmst={{guest_nbmst}}&khhdon={{guest_khhdon}}&shdon={{guest_shdon}}&tgtttbso={{guest_tgtttbso}}&tdlap={{guest_tdlap}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "{{guest_from}}",
+                "guest-invoices"
+              ],
+              "query": [
+                {
+                  "key": "cvalue",
+                  "value": "{{hddt_cvalue}}"
+                },
+                {
+                  "key": "ckey",
+                  "value": "{{hddt_ckey}}"
+                },
+                {
+                  "key": "khmshdon",
+                  "value": "{{guest_khmshdon}}"
+                },
+                {
+                  "key": "hdon",
+                  "value": "{{guest_hdon}}"
+                },
+                {
+                  "key": "nbmst",
+                  "value": "{{guest_nbmst}}"
+                },
+                {
+                  "key": "khhdon",
+                  "value": "{{guest_khhdon}}"
+                },
+                {
+                  "key": "shdon",
+                  "value": "{{guest_shdon}}"
+                },
+                {
+                  "key": "tgtttbso",
+                  "value": "{{guest_tgtttbso}}"
+                },
+                {
+                  "key": "tdlap",
+                  "value": "{{guest_tdlap}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04_EXCEL",
+      "item": [
+        {
+          "name": "01 GET /api/query/invoices/export-excel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"export-excel: xlsx/zip PK (msmi-header-service MapExcel / CrawlEInvoiceService)\", function () {",
+                  "        if (tctText().charAt(0) === \"{\") {",
+                  "            pm.expect.fail(\"CQT trả JSON lỗi thay vì Excel: \" + (cqtErrorMessage() || tctText().slice(0, 200)));",
+                  "        }",
+                  "        pm.expect(isPkZip(), \"magic PK (xlsx là zip)\").to.be.true;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip,deflate,br"
+              },
+              {
+                "key": "Action",
+                "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/query/invoices/export-excel?sort={{excel_sort}}&search={{excel_search}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "query",
+                "invoices",
+                "export-excel"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "{{excel_sort}}"
+                },
+                {
+                  "key": "search",
+                  "value": "{{excel_search}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "02 GET /api/sco-query/invoices/export-excel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"export-excel: xlsx/zip PK (msmi-header-service MapExcel / CrawlEInvoiceService)\", function () {",
+                  "        if (tctText().charAt(0) === \"{\") {",
+                  "            pm.expect.fail(\"CQT trả JSON lỗi thay vì Excel: \" + (cqtErrorMessage() || tctText().slice(0, 200)));",
+                  "        }",
+                  "        pm.expect(isPkZip(), \"magic PK (xlsx là zip)\").to.be.true;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip,deflate,br"
+              },
+              {
+                "key": "Action",
+                "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sco-query/invoices/export-excel?sort={{excel_sort}}&search={{excel_search_sco}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "sco-query",
+                "invoices",
+                "export-excel"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "{{excel_sort}}"
+                },
+                {
+                  "key": "search",
+                  "value": "{{excel_search_sco}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "03 GET /api/query/invoices/export-excel-sold",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"export-excel: xlsx/zip PK (msmi-header-service MapExcel / CrawlEInvoiceService)\", function () {",
+                  "        if (tctText().charAt(0) === \"{\") {",
+                  "            pm.expect.fail(\"CQT trả JSON lỗi thay vì Excel: \" + (cqtErrorMessage() || tctText().slice(0, 200)));",
+                  "        }",
+                  "        pm.expect(isPkZip(), \"magic PK (xlsx là zip)\").to.be.true;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip,deflate,br"
+              },
+              {
+                "key": "Action",
+                "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/query/invoices/export-excel-sold?sort={{excel_sort}}&search={{excel_search}}&type=purchase",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "query",
+                "invoices",
+                "export-excel-sold"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "{{excel_sort}}"
+                },
+                {
+                  "key": "search",
+                  "value": "{{excel_search}}"
+                },
+                {
+                  "key": "type",
+                  "value": "purchase"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "04 GET /api/sco-query/invoices/export-excel-sold",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"export-excel: xlsx/zip PK (msmi-header-service MapExcel / CrawlEInvoiceService)\", function () {",
+                  "        if (tctText().charAt(0) === \"{\") {",
+                  "            pm.expect.fail(\"CQT trả JSON lỗi thay vì Excel: \" + (cqtErrorMessage() || tctText().slice(0, 200)));",
+                  "        }",
+                  "        pm.expect(isPkZip(), \"magic PK (xlsx là zip)\").to.be.true;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip,deflate,br"
+              },
+              {
+                "key": "Action",
+                "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sco-query/invoices/export-excel-sold?sort={{excel_sort}}&search={{excel_search_sco}}&type=purchase",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "sco-query",
+                "invoices",
+                "export-excel-sold"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "{{excel_sort}}"
+                },
+                {
+                  "key": "search",
+                  "value": "{{excel_search_sco}}"
+                },
+                {
+                  "key": "type",
+                  "value": "purchase"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05_DETAIL",
+      "item": [
+        {
+          "name": "01 GET /api/query/invoices/detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"invoices/detail: có id (consume/invoiceDetail)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err && !j.id) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "        pm.expect(j.id, \"result.id\").to.be.ok;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Action",
+                "value": "Xem%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/query/invoices/detail?nbmst={{inv_nbmst}}&khhdon={{inv_khhdon}}&shdon={{inv_shdon}}&khmshdon={{inv_khmshdon}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "query",
+                "invoices",
+                "detail"
+              ],
+              "query": [
+                {
+                  "key": "nbmst",
+                  "value": "{{inv_nbmst}}"
+                },
+                {
+                  "key": "khhdon",
+                  "value": "{{inv_khhdon}}"
+                },
+                {
+                  "key": "shdon",
+                  "value": "{{inv_shdon}}"
+                },
+                {
+                  "key": "khmshdon",
+                  "value": "{{inv_khmshdon}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "02 GET /api/sco-query/invoices/detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"invoices/detail: có id (consume/invoiceDetail)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err && !j.id) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "        pm.expect(j.id, \"result.id\").to.be.ok;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Action",
+                "value": "Xem%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sco-query/invoices/detail?nbmst={{inv_nbmst}}&khhdon={{inv_khhdon}}&shdon={{inv_shdon}}&khmshdon={{inv_khmshdon}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "sco-query",
+                "invoices",
+                "detail"
+              ],
+              "query": [
+                {
+                  "key": "nbmst",
+                  "value": "{{inv_nbmst}}"
+                },
+                {
+                  "key": "khhdon",
+                  "value": "{{inv_khhdon}}"
+                },
+                {
+                  "key": "shdon",
+                  "value": "{{inv_shdon}}"
+                },
+                {
+                  "key": "khmshdon",
+                  "value": "{{inv_khmshdon}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06_XML",
+      "item": [
+        {
+          "name": "01 GET /api/query/invoices/export-xml",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"export-xml: ZIP PK (exportXmlViaProxy)\", function () {",
+                  "        if (tctText().charAt(0) === \"{\") {",
+                  "            pm.expect.fail(\"CQT trả JSON lỗi thay vì ZIP: \" + (cqtErrorMessage() || tctText().slice(0, 200)));",
+                  "        }",
+                  "        pm.expect(isPkZip(), \"magic PK\").to.be.true;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Action",
+                "value": "Xu%E1%BA%A5t%20xml%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/query/invoices/export-xml?nbmst={{inv_nbmst}}&khhdon={{inv_khhdon}}&shdon={{inv_shdon}}&khmshdon={{inv_khmshdon}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "query",
+                "invoices",
+                "export-xml"
+              ],
+              "query": [
+                {
+                  "key": "nbmst",
+                  "value": "{{inv_nbmst}}"
+                },
+                {
+                  "key": "khhdon",
+                  "value": "{{inv_khhdon}}"
+                },
+                {
+                  "key": "shdon",
+                  "value": "{{inv_shdon}}"
+                },
+                {
+                  "key": "khmshdon",
+                  "value": "{{inv_khmshdon}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "02 GET /api/sco-query/invoices/export-xml",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"export-xml: ZIP PK (exportXmlViaProxy)\", function () {",
+                  "        if (tctText().charAt(0) === \"{\") {",
+                  "            pm.expect.fail(\"CQT trả JSON lỗi thay vì ZIP: \" + (cqtErrorMessage() || tctText().slice(0, 200)));",
+                  "        }",
+                  "        pm.expect(isPkZip(), \"magic PK\").to.be.true;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Action",
+                "value": "Xu%E1%BA%A5t%20xml%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sco-query/invoices/export-xml?nbmst={{inv_nbmst}}&khhdon={{inv_khhdon}}&shdon={{inv_shdon}}&khmshdon={{inv_khmshdon}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "sco-query",
+                "invoices",
+                "export-xml"
+              ],
+              "query": [
+                {
+                  "key": "nbmst",
+                  "value": "{{inv_nbmst}}"
+                },
+                {
+                  "key": "khhdon",
+                  "value": "{{inv_khhdon}}"
+                },
+                {
+                  "key": "shdon",
+                  "value": "{{inv_shdon}}"
+                },
+                {
+                  "key": "khmshdon",
+                  "value": "{{inv_khmshdon}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07_RELATED",
+      "item": [
+        {
+          "name": "01 GET /api/query/invoices/related",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"invoices/related: có khhdon (consume/purchaseHdtbssrses, detailHdtbssres)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err && !j.khhdon) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "        pm.expect(j.khhdon, \"result.khhdon\").to.be.ok;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Action",
+                "value": "Xem%20th%C3%B4ng%20tin%20li%C3%AAn%20quan%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/query/invoices/related?nbmst={{inv_nbmst}}&khhdon={{inv_khhdon}}&shdon={{inv_shdon}}&khmshdon={{inv_khmshdon}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "query",
+                "invoices",
+                "related"
+              ],
+              "query": [
+                {
+                  "key": "nbmst",
+                  "value": "{{inv_nbmst}}"
+                },
+                {
+                  "key": "khhdon",
+                  "value": "{{inv_khhdon}}"
+                },
+                {
+                  "key": "shdon",
+                  "value": "{{inv_shdon}}"
+                },
+                {
+                  "key": "khmshdon",
+                  "value": "{{inv_khmshdon}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "02 GET /api/sco-query/invoices/related",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"invoices/related: có khhdon (consume/purchaseHdtbssrses, detailHdtbssres)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err && !j.khhdon) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "        pm.expect(j.khhdon, \"result.khhdon\").to.be.ok;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Action",
+                "value": "Xem%20th%C3%B4ng%20tin%20li%C3%AAn%20quan%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sco-query/invoices/related?nbmst={{inv_nbmst}}&khhdon={{inv_khhdon}}&shdon={{inv_shdon}}&khmshdon={{inv_khmshdon}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "sco-query",
+                "invoices",
+                "related"
+              ],
+              "query": [
+                {
+                  "key": "nbmst",
+                  "value": "{{inv_nbmst}}"
+                },
+                {
+                  "key": "khhdon",
+                  "value": "{{inv_khhdon}}"
+                },
+                {
+                  "key": "shdon",
+                  "value": "{{inv_shdon}}"
+                },
+                {
+                  "key": "khmshdon",
+                  "value": "{{inv_khmshdon}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "03 GET /api/query/invoices/relative",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"invoices/relative: JSON hợp lệ (getJsonViaProxy)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j != null, \"parsed JSON\").to.be.true;",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/query/invoices/relative?nbmst={{inv_nbmst}}&khhdon={{inv_khhdon}}&shdon={{inv_shdon}}&khmshdon={{inv_khmshdon}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "query",
+                "invoices",
+                "relative"
+              ],
+              "query": [
+                {
+                  "key": "nbmst",
+                  "value": "{{inv_nbmst}}"
+                },
+                {
+                  "key": "khhdon",
+                  "value": "{{inv_khhdon}}"
+                },
+                {
+                  "key": "shdon",
+                  "value": "{{inv_shdon}}"
+                },
+                {
+                  "key": "khmshdon",
+                  "value": "{{inv_khmshdon}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "04 GET /api/sco-query/invoices/relative",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"invoices/relative: JSON hợp lệ (getJsonViaProxy)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j != null, \"parsed JSON\").to.be.true;",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sco-query/invoices/relative?nbmst={{inv_nbmst}}&khhdon={{inv_khhdon}}&shdon={{inv_shdon}}&khmshdon={{inv_khmshdon}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "sco-query",
+                "invoices",
+                "relative"
+              ],
+              "query": [
+                {
+                  "key": "nbmst",
+                  "value": "{{inv_nbmst}}"
+                },
+                {
+                  "key": "khhdon",
+                  "value": "{{inv_khhdon}}"
+                },
+                {
+                  "key": "shdon",
+                  "value": "{{inv_shdon}}"
+                },
+                {
+                  "key": "khmshdon",
+                  "value": "{{inv_khmshdon}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "08_TBSS",
+      "item": [
+        {
+          "name": "01 GET /api/explanation/tbssdts/signed-notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"TBSS: datas[] + total (consume/hdtbssresExcel)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err && !Array.isArray(j.datas)) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "        pm.expect(j.datas, \"datas\").to.be.an(\"array\");",
+                  "        pm.expect(typeof j.total === \"number\", \"total number\").to.be.true;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Action",
+                "value": "T%C3%ACm%20ki%E1%BA%BFm"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/explanation/tbssdts/signed-notifications?sort={{tbss_sort}}&search={{tbss_search}}&size={{page_size}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "explanation",
+                "tbssdts",
+                "signed-notifications"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "{{tbss_sort}}"
+                },
+                {
+                  "key": "search",
+                  "value": "{{tbss_search}}"
+                },
+                {
+                  "key": "size",
+                  "value": "{{page_size}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "02 GET /api/sco-explanation/tbssdts/signed-notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"TBSS: datas[] + total (consume/hdtbssresExcel)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err && !Array.isArray(j.datas)) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "        pm.expect(j.datas, \"datas\").to.be.an(\"array\");",
+                  "        pm.expect(typeof j.total === \"number\", \"total number\").to.be.true;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Action",
+                "value": "T%C3%ACm%20ki%E1%BA%BFm"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sco-explanation/tbssdts/signed-notifications?sort={{tbss_sort}}&search={{tbss_search}}&size={{page_size}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "sco-explanation",
+                "tbssdts",
+                "signed-notifications"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "{{tbss_sort}}"
+                },
+                {
+                  "key": "search",
+                  "value": "{{tbss_search}}"
+                },
+                {
+                  "key": "size",
+                  "value": "{{page_size}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "09_PITW",
+      "item": [
+        {
+          "name": "01 GET /api/pitw",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"pitw: datas[] (parseCrawlResult / chungTuTncnHeader)\", function () {",
+                  "        const j = tctJson();",
+                  "        pm.expect(j, \"JSON\").to.be.an(\"object\");",
+                  "        const err = cqtErrorMessage(j);",
+                  "        if (err && !Array.isArray(j.datas) && !Array.isArray(j.content)) pm.expect.fail(\"CQT lỗi: \" + err);",
+                  "        const datas = Array.isArray(j.datas) ? j.datas : j.content;",
+                  "        pm.expect(datas, \"datas|content\").to.be.an(\"array\");",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip, deflate, br"
+              },
+              {
+                "key": "Action",
+                "value": "T%C3%ACm%20ki%E1%BA%BFm"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-chung-tu-tncn"
+              },
+              {
+                "key": "Referer",
+                "value": "https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pitw?size={{page_size}}&search={{pitw_search}}&sort=nlap:desc",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "pitw"
+              ],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "{{page_size}}"
+                },
+                {
+                  "key": "search",
+                  "value": "{{pitw_search}}"
+                },
+                {
+                  "key": "sort",
+                  "value": "nlap:desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "02 GET /api/pitw/export-xml",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function tctJson() {",
+                  "    try { return pm.response.json(); } catch (e) { return null; }",
+                  "}",
+                  "function tctText() { return (pm.response.text() || \"\").trim(); }",
+                  "function isTctWafBlocked() {",
+                  "    var j = tctJson();",
+                  "    if (!j) return false;",
+                  "    var msg = String(j.message || \"\");",
+                  "    return (pm.response.code === 403 || j.status === 403) && msg.indexOf(\"Hệ thống phát hiện hành vi không hợp lệ\") >= 0 && msg.indexOf(\"Yêu cầu đã bị chặn\") >= 0;",
+                  "}",
+                  "function isHtmlBlocked() {",
+                  "    var t = tctText();",
+                  "    return t.indexOf(\"This page can't be displayed\") >= 0 || /Request Rejected/i.test(t) || t.indexOf(\"<!DOCTYPE\") === 0;",
+                  "}",
+                  "function isPkZip() {",
+                  "    var s = pm.response.stream;",
+                  "    if (s && s.length >= 2) return s[0] === 0x50 && s[1] === 0x4b;",
+                  "    var t = pm.response.text() || \"\";",
+                  "    return t.charCodeAt(0) === 0x50 && t.charCodeAt(1) === 0x4b;",
+                  "}",
+                  "function isXmlHead() {",
+                  "    var t = tctText().replace(/^\\uFEFF/, \"\");",
+                  "    return t.charAt(0) === \"<\";",
+                  "}",
+                  "function cqtErrorMessage(j) {",
+                  "    j = j || tctJson();",
+                  "    if (!j || typeof j !== \"object\" || Array.isArray(j)) return null;",
+                  "    if (Array.isArray(j.datas) && j.datas.length) return null;",
+                  "    var msg = j.message || j.Message || j.error || j.Error || j.title || j.detail;",
+                  "    if (!msg) return null;",
+                  "    return String(msg).trim() || null;",
+                  "}",
+                  "if (isTctWafBlocked()) {",
+                  "    pm.test(\"FAIL: WAF 403 — Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn.\", function () {",
+                  "        pm.expect.fail((tctJson() && tctJson().message) || \"WAF 403\");",
+                  "    });",
+                  "} else if (isHtmlBlocked()) {",
+                  "    pm.test(\"FAIL: HTML WAF / Request Rejected\", function () {",
+                  "        pm.expect.fail(\"CQT trả HTML thay vì payload repo expect\");",
+                  "    });",
+                  "} else if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "    });",
+                  "} else {",
+                  "    pm.test(\"pitw/export-xml: ZIP hoặc XML (chung-tu-xml throwIfCqtErrorPayload)\", function () {",
+                  "        if (tctText().charAt(0) === \"{\") {",
+                  "            pm.expect.fail(\"CQT trả JSON lỗi thay vì XML/ZIP: \" + (cqtErrorMessage() || tctText().slice(0, 200)));",
+                  "        }",
+                  "        pm.expect(isPkZip() || isXmlHead(), \"ZIP PK hoặc XML <\").to.be.true;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "{{userAgent}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "vi"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip, deflate, br"
+              },
+              {
+                "key": "Action",
+                "value": ""
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-chung-tu-tncn"
+              },
+              {
+                "key": "Referer",
+                "value": "https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pitw/export-xml?hsgoc={{pitw_hsgoc}}",
+              "protocol": "https",
+              "host": [
+                "hoadondientu",
+                "gdt",
+                "gov",
+                "vn"
+              ],
+              "path": [
+                "api",
+                "pitw",
+                "export-xml"
+              ],
+              "query": [
+                {
+                  "key": "hsgoc",
+                  "value": "{{pitw_hsgoc}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "hoadondientu-auto-test",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Newman healthcheck hoadondientu.gdt.gov.vn — sinh test-report-{timestamp}/",
+  "scripts": {
+    "generate": "node generate-collection.js",
+    "test": "node run.js --folder 01_PUBLIC",
+    "health": "node run.js --folder 01_PUBLIC",
+    "test:login": "node run.js --folder 02_LOGIN",
+    "test:guest": "node run.js --folder 03_GUEST",
+    "test:excel": "node run.js --folder 04_EXCEL",
+    "test:detail": "node run.js --folder 05_DETAIL",
+    "test:xml": "node run.js --folder 06_XML",
+    "test:related": "node run.js --folder 07_RELATED",
+    "test:tbss": "node run.js --folder 08_TBSS",
+    "test:pitw": "node run.js --folder 09_PITW",
+    "test:all": "node run.js"
+  },
+  "dependencies": {
+    "newman": "^6.2.1"
+  }
+}
