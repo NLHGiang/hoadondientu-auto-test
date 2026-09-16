@@ -1,152 +1,180 @@
-# Auto-test healthcheck — hoadondientu.gdt.gov.vn
+# hoadondientu-auto-test
 
-Newman healthcheck cổng **Hóa đơn điện tử TCT** (`https://hoadondientu.gdt.gov.vn/api`). Folder này nằm ở **root workspace mSMI**, không thuộc repo con.
+Newman auto-test các API **Hóa đơn điện tử TCT** mà hệ thống mSMI đang gọi:
 
-Lưu response theo pattern [mtax-api/auto-test](../mtax-api/auto-test): mỗi lần chạy tạo `test-report-{timestamp}/` (HTML + JSON + `responses/`).
+`https://hoadondientu.gdt.gov.vn/api`
 
-**Base URL:** `https://hoadondientu.gdt.gov.vn/api` — không dùng `:30000`.
+Gọi thẳng TCT (không qua proxy). Base path là `/api`, không dùng `:30000`.
 
-Gọi thẳng TCT (không qua proxy). `npm test` = public. `npm run test:all` = mọi endpoint đang dùng (Excel/XML/TBSS/PITW — cửa sổ 1 ngày, `page_size=50` như worker). Query/header khớp call site Node/C#.
+Query, header (`Action`, `End-Point`, `Accept-Language: vi`) và **expect response** khớp logic xử lý trong `msmi-backend`, `crawl-data-api`, `proxy-request-api`, `msmi-frontend`.
 
 ## Cài đặt
 
+Node.js 18+.
+
 ```bash
-cd hoadondientu-auto-test
 npm install
 ```
+
+Collection: `HoaDonDienTu.healthcheck.postman_collection.json`  
+Env: `HoaDonDienTu.environment.json`
+
+Sau khi sửa `generate-collection.js`:
+
+```bash
+npm run generate
+```
+
+Không ghi mật khẩu / token / cookie vào file env. Truyền lúc chạy bằng `--env-var`.
 
 ## Chạy
 
 ```bash
+# Chỉ public (portal, captcha, tra MST)
 npm test
-# hoặc
-node run.js --folder 01_PUBLIC
 
+# Login TCT (bắt buộc username + password)
 npm run test:login -- --env-var hddt_username=<MST-ql> --env-var hddt_password=<mat-khau>
-npm run test:all -- --env-var hddt_username=<MST-ql> --env-var hddt_password=<mat-khau>
+
+# Guest tra cứu HĐ (bắt buộc nbmst, khhdon, shdon, khmshdon)
 npm run test:guest -- --env-var guest_nbmst=... --env-var guest_khhdon=... --env-var guest_shdon=... --env-var guest_khmshdon=1 --env-var guest_hdon=01 --env-var guest_tgtttbso=...
-# mẫu 6 (PXK): --env-var guest_khmshdon=6 --env-var guest_hdon=06_01 --env-var guest_tdlap=2026-09-16T00:00:00.000Z
-npm run generate
+
+# Mẫu 6 (phiếu xuất kho): tdlap ISO, không gửi tgtttbso
+npm run test:guest -- --env-var guest_nbmst=... --env-var guest_khhdon=... --env-var guest_shdon=... --env-var guest_khmshdon=6 --env-var guest_hdon=06_01 --env-var guest_tdlap=2026-09-16T00:00:00.000Z
+
+# Toàn bộ folder đang dùng
+npm run test:all -- --env-var hddt_username=<MST-ql> --env-var hddt_password=<mat-khau>
 ```
 
-Mỗi lần chạy tạo thư mục mới:
+`npm run test:all` (không `--folder`):
 
-```
-hoadondientu-auto-test/
-└── test-report-YYYYMMDD-HHMMSS/
-    ├── test-report.html
-    ├── test-report.json
-    └── responses/
-```
-
-Mở `test-report.html` **trong đúng thư mục** report (link `./responses/...` là tương đối). Không commit `test-report-*`. Không hardcode mật khẩu.
-
-## Folders
-
-| Folder | Lệnh | Endpoints |
-|---|---|---|
-| `01_PUBLIC` | `npm test` | portal, `/api/captcha`, `/api/category/public/dsdkts/{mst}/manager` |
-| `02_LOGIN` | `npm run test:login` | authenticate, profile |
-| `03_GUEST` | `npm run test:guest` | `/api/{query\|sco-query}/guest-invoices` |
-| `04_EXCEL` | `npm run test:excel` | `/api/{query\|sco-query}/invoices/export-excel`, `export-excel-sold` |
-| `05_DETAIL` | `npm run test:detail` | `/api/{query\|sco-query}/invoices/detail` |
-| `06_XML` | `npm run test:xml` | `/api/{query\|sco-query}/invoices/export-xml` |
-| `07_RELATED` | `npm run test:related` | `/api/{query\|sco-query}/invoices/related`, `relative` |
-| `08_TBSS` | `npm run test:tbss` | `/api/explanation/tbssdts/signed-notifications`, `sco-explanation` |
-| `09_PITW` | `npm run test:pitw` | `/api/pitw`, `/api/pitw/export-xml` |
-| tất cả | `npm run test:all` | public + (login nếu có TK) + 04–09 |
-
-OCR SVG: Newman không gửi được multipart — `run.js` gọi [lib/hddt-ocr-cli.js](lib/hddt-ocr-cli.js) rồi ghi trace vào report.
-
-**Expect theo logic repo** — sai HTTP/body thì FAIL:
-
-| Endpoint | Expect (repo) |
+| Có đủ biến | Folder |
 |---|---|
-| captcha | 200 + `key` + `content` (`captchaViaProxy`) |
-| authenticate | 200 + `token` (`CrawlEInvoiceLoginService`) |
-| profile | 200 + `username` (`fetchTaxpayerProfileViaProxy`) |
-| guest-invoices | 200 + `ttxly`, hoặc body rỗng = không tồn tại (`CrawlCheckInvoiceService`). JSON `message` không có `ttxly` → FAIL |
-| dsdkts/manager | 200 JSON object (`TaxCode.get`) |
-| export-excel* | 200 file xlsx (magic `PK`) |
-| detail | 200 + `id` (`consume/invoiceDetail`) |
-| export-xml | 200 ZIP (`PK`) (`exportXmlViaProxy`) |
-| related | 200 + `khhdon` (`purchaseHdtbssrses`) |
-| relative | 200 JSON (`getJsonViaProxy`) |
-| TBSS | 200 + `datas[]` + `total` (`hdtbssresExcel`). `datas: []` vẫn pass |
-| pitw | 200 + `datas[]` (`parseCrawlResult`). `datas: []` không có `message` vẫn pass |
-| pitw/export-xml | 200 ZIP hoặc XML (`chung-tu-xml`) |
+| luôn | `01_PUBLIC`, `04_EXCEL` … `09_PITW` |
+| `hddt_username` + `hddt_password` | thêm `02_LOGIN` (Bearer cho 04–09) |
+| `guest_nbmst` + `guest_khhdon` + `guest_shdon` + `guest_khmshdon` | thêm `03_GUEST` |
 
-WAF 403 `Hệ thống phát hiện hành vi không hợp lệ...`, HTML WAF, HTTP 401/4xx/5xx, JSON lỗi `{status,message}` → **FAIL**. Thiếu token / thiếu `inv_*` sẽ fail (đúng vì repo không coi đó là kết quả thành công).
+Thiếu token / thiếu `inv_*` / thiếu `pitw_hsgoc` → request vẫn chạy và **FAIL** (repo không coi 401/JSON lỗi là thành công).
+
+Từng folder: `npm run test:excel` | `test:detail` | `test:xml` | `test:related` | `test:tbss` | `test:pitw`.
+
+`run.js` gỡ header `Postman-Token` trước khi gửi. OCR captcha SVG: Newman không POST multipart được — `run.js` gọi `lib/hddt-ocr-cli.js` (endpoint nội bộ `captcha.minvoice.com.vn`, **không** phải API TCT).
+
+## Folder
+
+| Folder | Lệnh | Request |
+|---|---|---|
+| `01_PUBLIC` | `npm test` | `GET /`, `GET /api/captcha`, `GET /api/category/public/dsdkts/{mst}/manager` |
+| `02_LOGIN` | `npm run test:login` | captcha → OCR → `POST /api/security-taxpayer/authenticate` → `GET /api/security-taxpayer/profile?smiUsername=` |
+| `03_GUEST` | `npm run test:guest` | captcha → OCR → `GET /api/{query\|sco-query}/guest-invoices` (`sco-query` khi `khhdon[3]==='M'`) |
+| `04_EXCEL` | `npm run test:excel` | `export-excel`, `export-excel-sold` (query + sco-query) |
+| `05_DETAIL` | `npm run test:detail` | `invoices/detail` |
+| `06_XML` | `npm run test:xml` | `invoices/export-xml` |
+| `07_RELATED` | `npm run test:related` | `invoices/related`, `invoices/relative` |
+| `08_TBSS` | `npm run test:tbss` | `/api/explanation/tbssdts/signed-notifications`, `sco-explanation` |
+| `09_PITW` | `npm run test:pitw` | `GET /api/pitw`, `GET /api/pitw/export-xml?hsgoc=` |
+
+Không gen `/api/pitw/export-excel` (chỉ có `excelUrlBase` trong config, không có call site).
+
+## Report
+
+Mỗi lần chạy:
+
+```
+test-report-YYYYMMDD-HHMMSS/   # lịch sử local, gitignore
+last-test-report/              # lần chạy cuối — commit/push git
+  SOURCE.txt                   # tên thư mục timestamp nguồn
+  test-report.html
+  test-report.json
+  responses/
+```
+
+Mở `test-report.html` **trong đúng thư mục** đó (link `./responses/...` là tương đối).
+
+Trong HTML, `Authorization` / `Cookie` / password hiện `[đã gửi N ký tự — ẩn trong report]`. Newman đã gửi giá trị thật. Copy curl từ report **không replay** được phần đã ẩn.
+
+## Expect — sai thì FAIL
+
+HTTP phải **200** (portal: 2xx/3xx). Body phải đúng shape repo đang xử lý.
+
+| Request | Pass khi |
+|---|---|
+| Portal | HTTP &lt; 400 |
+| captcha | JSON `key` + `content` |
+| authenticate | JSON `token` |
+| profile | JSON `username` (string khác rỗng) |
+| guest-invoices | `ttxly` có mặt, **hoặc** body rỗng (C# = không tồn tại). JSON `message` không có `ttxly` → FAIL |
+| dsdkts/manager | JSON object, không phải lỗi CQT |
+| export-excel* | file xlsx (magic `PK`) |
+| detail | JSON `id` |
+| export-xml hóa đơn | ZIP (`PK`) |
+| related | JSON `khhdon` |
+| relative | JSON parse được, không phải payload lỗi CQT |
+| TBSS | `datas` (array) + `total` (number). `datas: []` vẫn pass |
+| pitw | `datas` hoặc `content` (array). Mảng rỗng, không `message` → pass |
+| pitw/export-xml | ZIP (`PK`) hoặc XML (`<`) |
+
+Luôn **FAIL**:
 
 ```json
 {"status":403,"message":"Hệ thống phát hiện hành vi không hợp lệ. Yêu cầu đã bị chặn."}
 ```
 
-Env thêm: `excel_search` / `excel_search_sco` (`ttxly==8`), `tbss_sort` / `tbss_search` (`ngay=`), `pitw_search` (nlap ISO), `inv_nbmst` / `inv_khhdon` / `inv_shdon` / `inv_khmshdon`, `pitw_hsgoc`, `pitw_cookie`. Bearer lấy từ login (`hddt_token`) nếu có.
+HTML WAF (`This page can't be displayed` / `Request Rejected`), HTTP 401/4xx/5xx, JSON `{status, message}` lỗi.
 
-### Khớp code (đã sửa)
+## Request khớp production
 
-| Request | Code | Healthcheck |
-|---|---|---|
-| guest-invoices | FE `hdon` + `tdlap`/`tgtttbso`; backend xóa field theo `khmshdon==6`; C# luôn `hdon` | `hdon`; mẫu 6 chỉ `tdlap`; còn lại chỉ `tgtttbso` |
-| export-excel* | Action `Xuất hóa đơn (hóa đơn mua vào)`; sco `ttxly==8`; purchase `type=purchase` | giống Node `crawl-excel.js` |
-| detail | Action `Xem hóa đơn (hóa đơn bán ra)` | giống `assets/index.js` |
-| export-xml | C# Action `Xuất xml (hóa đơn mua vào)` | giống `CrawlEInvoiceService.cs` |
-| related | Action `Xem thông tin liên quan (hóa đơn bán ra)` | giống `routes/invoices` |
-| relative | chỉ Bearer | không gửi Action/End-Point thêm |
-| TBSS | `sort=ngay:desc,so:desc` `search=ngay=ge/le` `size=50` Action Tìm kiếm | giống `hdtbssrses/sold.js` |
-| PITW list | `nlap=ge=...T17:00:00.000Z` size 50 | giống `buildPitwSearch` |
-| PITW xml | Action rỗng, Referer TNCN, Cookie nếu có | giống `chung-tu-xml.js` |
-| pitw/export-excel | chỉ `excelUrlBase` trong config, không call site | **không gen** |
-
----
-
-## API đang dùng trong các repo
-
-Repos **có gọi** TCT: `proxy-request-api`, `crawl-data-api`, `msmi-backend`, `msmi-frontend`, `proxy-forwarder-service`.
-
-Repos **không gọi** TCT: `msmibatch-job`, `msmi-pdf-service`, `msmi-header-service`, `crawl-etl-service-gl`, `mtax-api`, `msmi-mtax-api` (dùng `thuedientu` / `dichvucong`).
-
-### Public / guest
-
-| Method | Path | Repo |
-|---|---|---|
-| GET | `/api/captcha` | crawl-data-api, proxy-request-api, msmi-backend (qua proxy), proxy-forwarder (`DefaultTestUrl`) |
-| GET | `/api/query/guest-invoices` | crawl-data-api, msmi-backend |
-| GET | `/api/sco-query/guest-invoices` | crawl-data-api, msmi-backend (khi `khhdon[3]==='M'`) |
-| GET | `/api/category/public/dsdkts/{mst}/manager` | msmi-frontend (trực tiếp), msmi-backend (qua proxy) |
-
-### Auth
-
-| Method | Path | Repo |
-|---|---|---|
-| POST | `/api/security-taxpayer/authenticate` | crawl-data-api, proxy-request-api, msmi-backend (qua proxy), msmi-frontend `CaptchaService` |
-| GET | `/api/security-taxpayer/profile` | proxy-request-api, msmi-backend check-alive |
-
-### Hóa đơn đã login (Bearer)
-
-| Method | Path | Repo |
-|---|---|---|
-| GET | `/api/{query\|sco-query}/invoices/export-excel` | crawl-data-api, proxy-request-api, msmi-backend |
-| GET | `/api/{query\|sco-query}/invoices/export-excel-sold` | crawl-data-api, proxy-request-api, msmi-backend |
-| GET | `/api/{query\|sco-query}/invoices/detail` | crawl-data-api, proxy-request-api, msmi-backend |
-| GET | `/api/{query\|sco-query}/invoices/export-xml` | crawl-data-api, proxy-request-api, msmi-backend |
-
-### Chỉ msmi-backend
-
-| Method | Path |
+| API | Query / header |
 |---|---|
-| GET | `/api/{query\|sco-query}/invoices/related` |
-| GET | `/api/{query\|sco-query}/invoices/relative` |
-| GET | `/api/explanation/tbssdts/signed-notifications` |
-| GET | `/api/sco-explanation/tbssdts/signed-notifications` |
-| GET | `/api/pitw` |
-| GET | `/api/pitw/export-xml` |
+| guest-invoices | `hdon` (`01` / `02` / `06_01`…). `khmshdon==6` → `tdlap` ISO, xóa `tgtttbso`; ngược lại giữ `tgtttbso`, xóa `tdlap` |
+| export-excel (sold) | `sort=tdlap:desc,khmshdon:asc,shdon:desc`, `search=tdlap=ge/le`; **không** `type` |
+| export-excel-sold (purchase) | như trên + `type=purchase` |
+| sco-query excel | thêm `ttxly==8` (Node `crawl-excel.js`) |
+| Excel Action | `Xuất hóa đơn (hóa đơn mua vào)` |
+| detail Action | `Xem hóa đơn (hóa đơn bán ra)` |
+| XML Action | `Xuất xml (hóa đơn mua vào)` (C#) |
+| related Action | `Xem thông tin liên quan (hóa đơn bán ra)` |
+| relative | Bearer only, không `Action`/`End-Point` |
+| TBSS | `sort=ngay:desc,so:desc`, `search=ngay=ge/le`, `size=50`, Action `Tìm kiếm` |
+| PITW list | `nlap=ge=...T17:00:00.000Z` (00:00 VN) / `le=...T16:59:59.999Z`, `size=50`, Action `Tìm kiếm` |
+| PITW xml | Action rỗng, Referer `/tra-cuu/tra-cuu-chung-tu-tncn`; Cookie nếu có `pitw_cookie` |
 
-`/api/pitw/export-excel` chỉ có `excelUrlBase` trong config, không có call site — healthcheck **không** gọi. Legacy `/api/{query\|sco-query}/invoices/{sold\|purchase}` còn trong `msmi-backend/service/invoices/crawl.js` — worker active dùng `export-excel*`.
+`Accept-Language: vi`. HĐ đã login: `End-Point: /tra-cuu/tra-cuu-hoa-don`.
 
-Guest: `hdon` bắt buộc (FE `01`/`02`/`06_01`, C# `"0"+Serial[0]`). `khmshdon==6` gửi `tdlap` ISO, không gửi `tgtttbso`. TBSS search field là `ngay`, không phải `tdlap`. PITW `nlap` là ISO (`buildPitwSearch`), không phải `DD/MM/YYYY`.
+## Biến môi trường
 
-OCR nội bộ `/api/ocrcaptcha/tax_invoice_gov` **không** phải API TCT.
+Ghi trong `HoaDonDienTu.environment.json` hoặc `--env-var key=value` (CLI thắng file).
 
-`CrawlForwardRequestDto.UpStreamBase` giữ origin `https://hoadondientu.gdt.gov.vn` vì `path` đã là `api/...`.
+| Key | Ý nghĩa |
+|---|---|
+| `hddt_username` / `hddt_password` | Login TCT |
+| `hddt_token` | Bearer sẵn (nếu không login trong lần chạy) |
+| `test_mst` | MST public category (mặc định `0100109106`) |
+| `guest_nbmst`, `guest_khhdon`, `guest_shdon`, `guest_khmshdon`, `guest_hdon` | Tra cứu guest |
+| `guest_tgtttbso` | Tổng tiền (không mẫu 6) |
+| `guest_tdlap` | Ngày lập ISO (mẫu 6) |
+| `guest_from` | `query` hoặc `sco-query` (tự `sco-query` nếu `khhdon[3]==='M'`) |
+| `excel_sort`, `excel_search`, `excel_search_sco` | Cửa sổ excel (1 ngày, format `DD/MM/YYYYTHH:mm:ss`) |
+| `tbss_sort`, `tbss_search` | Field `ngay`, không `tdlap` |
+| `pitw_search` | `nlap` ISO |
+| `page_size` | Mặc định `50` (giống worker) |
+| `inv_nbmst`, `inv_khhdon`, `inv_shdon`, `inv_khmshdon` | detail / xml / related / relative |
+| `pitw_hsgoc` | XML chứng từ TNCN |
+| `pitw_cookie` | Cookie session CQT cho `/api/pitw` |
+
+## File
+
+| File | Vai trò |
+|---|---|
+| `run.js` | Newman runner, OCR, inject captcha/token/guest, report |
+| `generate-collection.js` | Sinh Postman collection v2.1 |
+| `HoaDonDienTu.environment.json` | Env mặc định (secret để trống) |
+| `lib/hddt-ocr-cli.js` | OCR SVG `tax_invoice_gov` |
+| `lib/build-report.js` | HTML + JSON report |
+| `last-test-report/` | Report lần chạy cuối (git) |
+
+## API TCT đang dùng (mSMI)
+
+Có gọi: `msmi-backend`, `crawl-data-api`, `proxy-request-api`, `msmi-frontend`, `proxy-forwarder-service`.
+
+Không gọi TCT HĐĐT: `msmibatch-job`, `msmi-pdf-service`, `msmi-header-service` (parse excel, không HTTP TCT), `mtax-api` / `msmi-mtax-api` (thuedientu / dichvucong).

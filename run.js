@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Chạy Newman + sinh test-report-{timestamp}/ (HTML + responses) — pattern mtax-api/auto-test.
+ * Chạy Newman + sinh test-report-{timestamp}/ (gitignore) và last-test-report/ (git).
  *
  * Usage:
  *   npm test
@@ -18,6 +18,7 @@ const { saveResponse, getHeader, readResponseBody } = require('./lib/save-respon
 const { writeReport } = require('./lib/build-report');
 
 const ROOT = __dirname;
+const LAST_REPORT_DIR = path.join(ROOT, 'last-test-report');
 const OCR_CLI = path.join(ROOT, 'lib', 'hddt-ocr-cli.js');
 const ITEM_CAPTCHA = /GET \/api\/captcha/i;
 const ITEM_OCR = /OCR tax_invoice_gov/i;
@@ -67,6 +68,17 @@ function timestampDir() {
   const d = new Date();
   const pad = (n) => String(n).padStart(2, '0');
   return `test-report-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+}
+
+/** Bản lần cuối để commit/push git. Timestamped test-report-* vẫn gitignore. */
+function publishLastTestReport(reportDir, reportDirName) {
+  fs.rmSync(LAST_REPORT_DIR, { recursive: true, force: true });
+  fs.cpSync(reportDir, LAST_REPORT_DIR, { recursive: true });
+  fs.writeFileSync(
+    path.join(LAST_REPORT_DIR, 'SOURCE.txt'),
+    `${reportDirName}\n`,
+    'utf8'
+  );
 }
 
 function resolveFolderName(item) {
@@ -369,6 +381,13 @@ function main() {
     console.log(`\nHTML report: ${htmlPath}`);
     console.log(`   JSON manifest: ${path.join(reportDir, 'test-report.json')}`);
     console.log(`   Response files: ${path.join(reportDir, 'responses')}/`);
+
+    try {
+      publishLastTestReport(reportDir, reportDirName);
+      console.log(`   Last report (git): ${LAST_REPORT_DIR}`);
+    } catch (copyErr) {
+      console.warn('Không copy được last-test-report:', copyErr.message);
+    }
 
     const failed = cases.filter((c) => c.failedAssertions > 0 || c.error).length;
     process.exit(err || failed > 0 ? 1 : 0);
