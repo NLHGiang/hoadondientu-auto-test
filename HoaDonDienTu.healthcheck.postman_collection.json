@@ -1391,12 +1391,24 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip,deflate,br"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
               },
               {
                 "key": "Accept-Language",
                 "value": "vi"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "Origin",
@@ -1407,24 +1419,12 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "Accept-Encoding",
-                "value": "gzip,deflate,br"
+                "key": "User-Agent",
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Action",
                 "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
-              },
-              {
-                "key": "End-Point",
-                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "request-id",
@@ -1541,12 +1541,24 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip,deflate,br"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
               },
               {
                 "key": "Accept-Language",
                 "value": "vi"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "Origin",
@@ -1557,24 +1569,12 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "Accept-Encoding",
-                "value": "gzip,deflate,br"
+                "key": "User-Agent",
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Action",
                 "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
-              },
-              {
-                "key": "End-Point",
-                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "request-id",
@@ -1691,12 +1691,24 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip,deflate,br"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
               },
               {
                 "key": "Accept-Language",
                 "value": "vi"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "Origin",
@@ -1707,24 +1719,12 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "Accept-Encoding",
-                "value": "gzip,deflate,br"
+                "key": "User-Agent",
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Action",
                 "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
-              },
-              {
-                "key": "End-Point",
-                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "request-id",
@@ -1845,12 +1845,24 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip,deflate,br"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
               },
               {
                 "key": "Accept-Language",
                 "value": "vi"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "Origin",
@@ -1861,24 +1873,12 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "Accept-Encoding",
-                "value": "gzip,deflate,br"
+                "key": "User-Agent",
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Action",
                 "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
-              },
-              {
-                "key": "End-Point",
-                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "request-id",
@@ -2005,12 +2005,20 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
               },
               {
                 "key": "Accept-Language",
                 "value": "vi"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "Origin",
@@ -2021,20 +2029,12 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "*/*"
+                "key": "User-Agent",
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Action",
                 "value": "Xem%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
-              },
-              {
-                "key": "End-Point",
-                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "request-id",
@@ -2160,12 +2160,20 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
               },
               {
                 "key": "Accept-Language",
                 "value": "vi"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "Origin",
@@ -2176,20 +2184,12 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "*/*"
+                "key": "User-Agent",
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Action",
                 "value": "Xem%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
-              },
-              {
-                "key": "End-Point",
-                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "request-id",
@@ -2319,12 +2319,24 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip,deflate,br"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
               },
               {
                 "key": "Accept-Language",
                 "value": "vi"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "Origin",
@@ -2335,20 +2347,12 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "*/*"
+                "key": "User-Agent",
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Action",
                 "value": "Xu%E1%BA%A5t%20xml%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
-              },
-              {
-                "key": "End-Point",
-                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "request-id",
@@ -2473,12 +2477,24 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip,deflate,br"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
               },
               {
                 "key": "Accept-Language",
                 "value": "vi"
+              },
+              {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "Origin",
@@ -2489,20 +2505,12 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "*/*"
+                "key": "User-Agent",
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Action",
                 "value": "Xu%E1%BA%A5t%20xml%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
-              },
-              {
-                "key": "End-Point",
-                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "request-id",
@@ -2633,26 +2641,6 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json, text/plain, */*"
-              },
-              {
-                "key": "Accept-Language",
-                "value": "vi"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Referer",
-                "value": "{{baseUrl}}/"
-              },
-              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -2663,6 +2651,22 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "User-Agent",
+                "value": "{{userAgentProxy}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
               },
               {
                 "key": "request-id",
@@ -2788,26 +2792,6 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json, text/plain, */*"
-              },
-              {
-                "key": "Accept-Language",
-                "value": "vi"
-              },
-              {
-                "key": "Origin",
-                "value": "{{baseUrl}}"
-              },
-              {
-                "key": "Referer",
-                "value": "{{baseUrl}}/"
-              },
-              {
                 "key": "Authorization",
                 "value": "Bearer {{hddt_token}}"
               },
@@ -2818,6 +2802,22 @@
               {
                 "key": "End-Point",
                 "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
+                "key": "Origin",
+                "value": "{{baseUrl}}"
+              },
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}/"
+              },
+              {
+                "key": "User-Agent",
+                "value": "{{userAgentProxy}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
               },
               {
                 "key": "request-id",
@@ -3217,8 +3217,8 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
               },
               {
                 "key": "Accept",
@@ -3229,6 +3229,10 @@
                 "value": "vi"
               },
               {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
                 "key": "Origin",
                 "value": "{{baseUrl}}"
               },
@@ -3237,16 +3241,12 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
+                "key": "User-Agent",
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Action",
                 "value": "T%C3%ACm%20ki%E1%BA%BFm"
-              },
-              {
-                "key": "End-Point",
-                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "request-id",
@@ -3369,8 +3369,8 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentCrawl}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
               },
               {
                 "key": "Accept",
@@ -3381,6 +3381,10 @@
                 "value": "vi"
               },
               {
+                "key": "End-Point",
+                "value": "/tra-cuu/tra-cuu-hoa-don"
+              },
+              {
                 "key": "Origin",
                 "value": "{{baseUrl}}"
               },
@@ -3389,16 +3393,12 @@
                 "value": "{{baseUrl}}/"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
+                "key": "User-Agent",
+                "value": "{{userAgentCrawl}}"
               },
               {
                 "key": "Action",
                 "value": "T%C3%ACm%20ki%E1%BA%BFm"
-              },
-              {
-                "key": "End-Point",
-                "value": "/tra-cuu/tra-cuu-hoa-don"
               },
               {
                 "key": "request-id",
@@ -3529,8 +3529,8 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentPitw}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
               },
               {
                 "key": "Accept",
@@ -3557,8 +3557,8 @@
                 "value": "https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
+                "key": "User-Agent",
+                "value": "{{userAgentPitw}}"
               },
               {
                 "key": "Action",
@@ -3681,8 +3681,8 @@
             "method": "GET",
             "header": [
               {
-                "key": "User-Agent",
-                "value": "{{userAgentPitw}}"
+                "key": "authorization",
+                "value": "Bearer {{hddt_token}}"
               },
               {
                 "key": "Accept",
@@ -3709,8 +3709,8 @@
                 "value": "https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn"
               },
               {
-                "key": "Authorization",
-                "value": "Bearer {{hddt_token}}"
+                "key": "User-Agent",
+                "value": "{{userAgentPitw}}"
               },
               {
                 "key": "Action",

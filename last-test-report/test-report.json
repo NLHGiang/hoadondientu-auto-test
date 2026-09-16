@@ -1,11 +1,11 @@
 {
   "title": "HoaDonDienTu Healthcheck",
-  "startedAt": "2026-09-16T04:18:38.464Z",
-  "finishedAt": "2026-09-16T04:18:54.711Z",
-  "durationMs": 16247,
+  "startedAt": "2026-09-16T06:53:18.898Z",
+  "finishedAt": "2026-09-16T06:53:36.647Z",
+  "durationMs": 17749,
   "collection": "HoaDonDienTu.healthcheck.postman_collection.json",
   "environment": "HoaDonDienTu.environment.json",
-  "reportDirName": "test-report-20260916-111838",
+  "reportDirName": "test-report-20260916-135318",
   "newmanError": null,
   "stats": {
     "iterations": {
@@ -81,11 +81,11 @@
         },
         {
           "key": "request-id",
-          "value": "a3437dfe-4a28-45ad-a848-3ac09ec32d66"
+          "value": "7f584931-60c7-4849-99f2-40983ff0d7fe"
         }
       ],
       "responseCode": 200,
-      "responseTime": 208,
+      "responseTime": 198,
       "responseContentType": "text/html; charset=utf-8",
       "assertions": [
         {
@@ -114,7 +114,7 @@
         },
         {
           "key": "request-id",
-          "value": "6c164040-caa6-4732-bf3e-fb3faffa621e"
+          "value": "4e4dd68d-a86b-4209-a52b-d6fb84029065"
         }
       ],
       "responseCode": 200,
@@ -147,11 +147,11 @@
         },
         {
           "key": "request-id",
-          "value": "a8e2d8f6-3411-4343-8a00-90ec1da8e14c"
+          "value": "477b4c38-4ae9-40c8-b524-793c38baa6ce"
         }
       ],
       "responseCode": 200,
-      "responseTime": 33,
+      "responseTime": 36,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -184,11 +184,11 @@
         },
         {
           "key": "request-id",
-          "value": "83343e58-10a0-4f1c-a1a0-b27aa536ea88"
+          "value": "7c60d01e-828e-4446-b17b-bd4d1917aaad"
         }
       ],
       "responseCode": 200,
-      "responseTime": 52,
+      "responseTime": 54,
       "responseContentType": "text/html; charset=utf-8",
       "assertions": [
         {
@@ -216,16 +216,16 @@
           "value": "application/json, text/plain, */*"
         },
         {
-          "key": "Cookie",
-          "value": "[đã gửi 248 ký tự — ẩn trong report]"
+          "key": "request-id",
+          "value": "01343bdb-f524-48dd-9175-c24f68d94e67"
         },
         {
-          "key": "request-id",
-          "value": "414d0ba0-2263-457e-8978-ee500116b2c1"
+          "key": "Cookie",
+          "value": "df9a7b9f11f13b2b359e1a94557637ae=30d3d96b95bf211a5db19d5eb13f465e; TS0114b13e=011c0ae740899d566de34995cb4957c1c76cacce597065136e9af775c040585f7ea6424b4f98b27d3107df8c04d2052936df7d5ab40d46b612fbbd458f1fba40220dbd814ee29a38afb811a310b408198fec463a17"
         }
       ],
       "responseCode": 200,
-      "responseTime": 47,
+      "responseTime": 37,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -245,10 +245,6 @@
       "url": "https://postman-echo.com/post",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "PostmanRuntime/7.39.1"
-        },
-        {
           "key": "Accept",
           "value": "application/json"
         },
@@ -258,11 +254,15 @@
         },
         {
           "key": "request-id",
-          "value": "48f1920c-4d1a-4d6e-8a91-2be64fa1d918"
+          "value": "b022ce15-0f32-4706-b7a7-0075e3a5b96f"
+        },
+        {
+          "key": "User-Agent",
+          "value": "PostmanRuntime/7.39.1"
         }
       ],
       "responseCode": 200,
-      "responseTime": 541,
+      "responseTime": 1523,
       "responseContentType": "application/json; charset=utf-8",
       "assertions": [
         {
@@ -290,20 +290,20 @@
           "value": "application/json, text/plain, */*"
         },
         {
-          "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
-        },
-        {
           "key": "Content-Type",
           "value": "application/json"
         },
         {
           "key": "request-id",
-          "value": "b05590b2-2ce7-431c-8e28-3fc0bac8b23f"
+          "value": "0c402b6e-f319-45ad-93bf-0e524514dbfb"
+        },
+        {
+          "key": "Cookie",
+          "value": "df9a7b9f11f13b2b359e1a94557637ae=30d3d96b95bf211a5db19d5eb13f465e; TS0114b13e=011c0ae740e1b90a175834f67feed8268f479b88907065136e9af775c040585f7ea6424b4f98b27d3107df8c04d2052936df7d5ab40d46b612fbbd458f1fba40220dbd814ec869a539917811578f012c27f432ca7651b69e5b18fb2e31afbd6d6ca836ad09aef9ffa558329448675d9efaa49218c1; e1a565439633aacdd764ec3e73b3cc09=a58975e8c81de77d185c05731d0b9202; d1efc622449bf821db4b4d84c82eafa1=7f52e247f66483f07a6431a087779c4a"
         }
       ],
       "responseCode": 200,
-      "responseTime": 76,
+      "responseTime": 285,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -332,19 +332,19 @@
         },
         {
           "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
-        },
-        {
-          "key": "Cookie",
-          "value": "[đã gửi 446 ký tự — ẩn trong report]"
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
         },
         {
           "key": "request-id",
-          "value": "7f1ae94f-ac71-43a3-ae6d-16f8c37f9770"
+          "value": "8b2202a9-e756-4cd7-8278-2047821a1c50"
+        },
+        {
+          "key": "Cookie",
+          "value": "df9a7b9f11f13b2b359e1a94557637ae=30d3d96b95bf211a5db19d5eb13f465e; TS0114b13e=011c0ae740e1b90a175834f67feed8268f479b88907065136e9af775c040585f7ea6424b4f98b27d3107df8c04d2052936df7d5ab40d46b612fbbd458f1fba40220dbd814ec869a539917811578f012c27f432ca7651b69e5b18fb2e31afbd6d6ca836ad09aef9ffa558329448675d9efaa49218c1; e1a565439633aacdd764ec3e73b3cc09=a58975e8c81de77d185c05731d0b9202; d1efc622449bf821db4b4d84c82eafa1=7f52e247f66483f07a6431a087779c4a"
         }
       ],
       "responseCode": 200,
-      "responseTime": 36,
+      "responseTime": 34,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -377,11 +377,11 @@
         },
         {
           "key": "request-id",
-          "value": "ee793de0-d559-4b39-815c-0fd698f64704"
+          "value": "2fc6a98e-d2fd-46c3-88be-1fde51b942b3"
         }
       ],
       "responseCode": 200,
-      "responseTime": 49,
+      "responseTime": 50,
       "responseContentType": "text/html; charset=utf-8",
       "assertions": [
         {
@@ -410,11 +410,11 @@
         },
         {
           "key": "request-id",
-          "value": "58087e4e-e82d-4a53-9069-f2767a508898"
+          "value": "568f5d91-c22e-42f8-9714-72a1fe11ee17"
         }
       ],
       "responseCode": 200,
-      "responseTime": 707,
+      "responseTime": 36,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -434,10 +434,6 @@
       "url": "https://postman-echo.com/post",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "PostmanRuntime/7.39.1"
-        },
-        {
           "key": "Accept",
           "value": "application/json"
         },
@@ -447,11 +443,15 @@
         },
         {
           "key": "request-id",
-          "value": "fc165bf8-ff6a-4e4c-9125-0b6321b26087"
+          "value": "ba666bc5-4bc4-4db5-bcc1-e7b3cd44a6ed"
+        },
+        {
+          "key": "User-Agent",
+          "value": "PostmanRuntime/7.39.1"
         }
       ],
       "responseCode": 200,
-      "responseTime": 331,
+      "responseTime": 322,
       "responseContentType": "application/json; charset=utf-8",
       "assertions": [
         {
@@ -468,7 +468,7 @@
       "folder": "03_GUEST",
       "name": "04 GET /api/{from}/guest-invoices",
       "method": "GET",
-      "url": "https://hoadondientu.gdt.gov.vn/api/sco-query/guest-invoices?cvalue=BE7EWR&ckey=6aaa18a4f5e4663fb1c920db&khmshdon=1&hdon=01&nbmst=3603914658&khhdon=C25MDH&shdon=122252&tgtttbso=804339800",
+      "url": "https://hoadondientu.gdt.gov.vn/api/sco-query/guest-invoices?cvalue=F3ZZHC&ckey=6aaa3ce5f5e4663fb1d1ac74&khmshdon=1&hdon=01&nbmst=3603914658&khhdon=C25MDH&shdon=122252&tgtttbso=804339800",
       "requestHeaders": [
         {
           "key": "User-Agent",
@@ -480,11 +480,11 @@
         },
         {
           "key": "request-id",
-          "value": "6f2a17ea-e1d0-4573-b06b-e9dd2465b260"
+          "value": "f732a5db-ef22-4764-8096-630dad3974a2"
         }
       ],
       "responseCode": 200,
-      "responseTime": 39,
+      "responseTime": 34,
       "responseContentType": "",
       "assertions": [
         {
@@ -504,8 +504,12 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/query/invoices/export-excel?sort=tdlap%3Adesc%2Ckhmshdon%3Aasc%2Cshdon%3Adesc&search=tdlap%3Dge%3D16%2F09%2F2026T00%3A00%3A00%3Btdlap%3Dle%3D16%2F09%2F2026T23%3A59%3A59",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip,deflate,br"
         },
         {
           "key": "Accept",
@@ -514,14 +518,6 @@
         {
           "key": "Accept-Language",
           "value": "vi"
-        },
-        {
-          "key": "Accept-Encoding",
-          "value": "gzip,deflate,br"
-        },
-        {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "End-Point",
@@ -536,16 +532,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+        },
+        {
           "key": "Action",
           "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
         },
         {
           "key": "request-id",
-          "value": "3c8a7f28-75d3-40e1-a940-53a5ca6dab2f"
+          "value": "0e165a11-3659-4f71-b047-aa8e5eb6678e"
         }
       ],
       "responseCode": 200,
-      "responseTime": 97,
+      "responseTime": 130,
       "responseContentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "assertions": [
         {
@@ -565,8 +565,12 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/sco-query/invoices/export-excel?sort=tdlap%3Adesc%2Ckhmshdon%3Aasc%2Cshdon%3Adesc&search=tdlap%3Dge%3D16%2F09%2F2026T00%3A00%3A00%3Btdlap%3Dle%3D16%2F09%2F2026T23%3A59%3A59%3Bttxly%3D%3D8",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip,deflate,br"
         },
         {
           "key": "Accept",
@@ -575,14 +579,6 @@
         {
           "key": "Accept-Language",
           "value": "vi"
-        },
-        {
-          "key": "Accept-Encoding",
-          "value": "gzip,deflate,br"
-        },
-        {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "End-Point",
@@ -597,16 +593,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+        },
+        {
           "key": "Action",
           "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
         },
         {
           "key": "request-id",
-          "value": "cdb8d6a5-918b-47d0-aaba-fd242bd7cc3d"
+          "value": "b62eca95-41dd-466e-9b3a-b87bd532cb3d"
         }
       ],
       "responseCode": 200,
-      "responseTime": 93,
+      "responseTime": 86,
       "responseContentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "assertions": [
         {
@@ -626,8 +626,12 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/query/invoices/export-excel-sold?sort=tdlap%3Adesc%2Ckhmshdon%3Aasc%2Cshdon%3Adesc&search=tdlap%3Dge%3D16%2F09%2F2026T00%3A00%3A00%3Btdlap%3Dle%3D16%2F09%2F2026T23%3A59%3A59&type=purchase",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip,deflate,br"
         },
         {
           "key": "Accept",
@@ -636,14 +640,6 @@
         {
           "key": "Accept-Language",
           "value": "vi"
-        },
-        {
-          "key": "Accept-Encoding",
-          "value": "gzip,deflate,br"
-        },
-        {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "End-Point",
@@ -658,16 +654,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+        },
+        {
           "key": "Action",
           "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
         },
         {
           "key": "request-id",
-          "value": "54493c93-2ad8-4661-b5a1-915947ce859a"
+          "value": "71477b3b-d170-4971-ba05-1551b9474884"
         }
       ],
       "responseCode": 200,
-      "responseTime": 120,
+      "responseTime": 137,
       "responseContentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "assertions": [
         {
@@ -687,8 +687,12 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/sco-query/invoices/export-excel-sold?sort=tdlap%3Adesc%2Ckhmshdon%3Aasc%2Cshdon%3Adesc&search=tdlap%3Dge%3D16%2F09%2F2026T00%3A00%3A00%3Btdlap%3Dle%3D16%2F09%2F2026T23%3A59%3A59%3Bttxly%3D%3D8&type=purchase",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip,deflate,br"
         },
         {
           "key": "Accept",
@@ -697,14 +701,6 @@
         {
           "key": "Accept-Language",
           "value": "vi"
-        },
-        {
-          "key": "Accept-Encoding",
-          "value": "gzip,deflate,br"
-        },
-        {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "End-Point",
@@ -719,16 +715,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+        },
+        {
           "key": "Action",
           "value": "Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
         },
         {
           "key": "request-id",
-          "value": "ba6d8587-d9eb-4a17-99f0-d32fce68e3c3"
+          "value": "26826d7c-0333-4edb-8dc0-d93452a30cbe"
         }
       ],
       "responseCode": 200,
-      "responseTime": 98,
+      "responseTime": 1055,
       "responseContentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "assertions": [
         {
@@ -748,8 +748,8 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/query/invoices/detail?nbmst=&khhdon=&shdon=&khmshdon=",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
         },
         {
           "key": "Accept",
@@ -758,10 +758,6 @@
         {
           "key": "Accept-Language",
           "value": "vi"
-        },
-        {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "End-Point",
@@ -776,16 +772,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+        },
+        {
           "key": "Action",
           "value": "Xem%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
         },
         {
           "key": "request-id",
-          "value": "ff07c561-856c-41d6-ad81-20de965b3bc1"
+          "value": "5a0c6801-cb87-4d45-9d54-ed9af24e59de"
         }
       ],
       "responseCode": 500,
-      "responseTime": 58,
+      "responseTime": 40,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -811,8 +811,8 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/sco-query/invoices/detail?nbmst=&khhdon=&shdon=&khmshdon=",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
         },
         {
           "key": "Accept",
@@ -821,10 +821,6 @@
         {
           "key": "Accept-Language",
           "value": "vi"
-        },
-        {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "End-Point",
@@ -839,16 +835,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+        },
+        {
           "key": "Action",
           "value": "Xem%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
         },
         {
           "key": "request-id",
-          "value": "d1a3843c-aca4-4bc5-9f37-4ee3bbe5f5f5"
+          "value": "b69eeee5-4d56-4a9e-9e73-d0c5faa3cce1"
         }
       ],
       "responseCode": 500,
-      "responseTime": 39,
+      "responseTime": 707,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -874,8 +874,12 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/query/invoices/export-xml?nbmst=&khhdon=&shdon=&khmshdon=",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip,deflate,br"
         },
         {
           "key": "Accept",
@@ -884,10 +888,6 @@
         {
           "key": "Accept-Language",
           "value": "vi"
-        },
-        {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "End-Point",
@@ -902,16 +902,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+        },
+        {
           "key": "Action",
           "value": "Xu%E1%BA%A5t%20xml%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
         },
         {
           "key": "request-id",
-          "value": "6f7bcf9b-bee3-461e-8d89-0034181ccdcb"
+          "value": "219283bc-52a0-41ed-86bb-86cc2121c845"
         }
       ],
       "responseCode": 500,
-      "responseTime": 41,
+      "responseTime": 37,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -937,8 +941,12 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/sco-query/invoices/export-xml?nbmst=&khhdon=&shdon=&khmshdon=",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip,deflate,br"
         },
         {
           "key": "Accept",
@@ -947,10 +955,6 @@
         {
           "key": "Accept-Language",
           "value": "vi"
-        },
-        {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "End-Point",
@@ -965,16 +969,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+        },
+        {
           "key": "Action",
           "value": "Xu%E1%BA%A5t%20xml%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)"
         },
         {
           "key": "request-id",
-          "value": "ad139538-68a6-4249-b7a1-1e905f4a74bd"
+          "value": "06a2a946-5918-49c3-980e-b2868bae1857"
         }
       ],
       "responseCode": 500,
-      "responseTime": 43,
+      "responseTime": 34,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -1000,20 +1008,12 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/query/invoices/related?nbmst=&khhdon=&shdon=&khmshdon=",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
-        },
-        {
-          "key": "Accept",
-          "value": "application/json, text/plain, */*"
-        },
-        {
-          "key": "Accept-Language",
-          "value": "vi"
-        },
-        {
           "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
+        },
+        {
+          "key": "Action",
+          "value": "Xem%20th%C3%B4ng%20tin%20li%C3%AAn%20quan%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
         },
         {
           "key": "End-Point",
@@ -1028,16 +1028,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
-          "key": "Action",
-          "value": "Xem%20th%C3%B4ng%20tin%20li%C3%AAn%20quan%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        },
+        {
+          "key": "Accept",
+          "value": "application/json, text/plain, */*"
         },
         {
           "key": "request-id",
-          "value": "7dd8d0fe-efd3-46dd-aa97-2ff18cd11649"
+          "value": "b440aaf4-64bc-474e-8806-0658d8d98926"
         }
       ],
       "responseCode": 500,
-      "responseTime": 41,
+      "responseTime": 36,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -1063,20 +1067,12 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/sco-query/invoices/related?nbmst=&khhdon=&shdon=&khmshdon=",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
-        },
-        {
-          "key": "Accept",
-          "value": "application/json, text/plain, */*"
-        },
-        {
-          "key": "Accept-Language",
-          "value": "vi"
-        },
-        {
           "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
+        },
+        {
+          "key": "Action",
+          "value": "Xem%20th%C3%B4ng%20tin%20li%C3%AAn%20quan%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
         },
         {
           "key": "End-Point",
@@ -1091,26 +1087,30 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
-          "key": "Action",
-          "value": "Xem%20th%C3%B4ng%20tin%20li%C3%AAn%20quan%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)"
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        },
+        {
+          "key": "Accept",
+          "value": "application/json, text/plain, */*"
         },
         {
           "key": "request-id",
-          "value": "8525c518-2e88-43f9-8c2d-73fb5bbbb9db"
+          "value": "7123f69f-8e56-453b-801b-56d6f9516fb2"
         }
       ],
-      "responseCode": 200,
-      "responseTime": 153,
-      "responseContentType": "text/html; charset=UTF-8",
+      "responseCode": 500,
+      "responseTime": 40,
+      "responseContentType": "application/json",
       "assertions": [
         {
-          "name": "FAIL: HTML WAF / Request Rejected",
+          "name": "HTTP 200",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: HTML WAF / Request Rejected",
-            "message": "CQT trả HTML thay vì payload repo expect",
-            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:22)"
+            "test": "HTTP 200",
+            "message": "expected 500 to deeply equal 200",
+            "stack": "AssertionError: expected 500 to deeply equal 200\n   at Object.eval sandbox-script.js:1:22)"
           }
         }
       ],
@@ -1135,25 +1135,25 @@
         },
         {
           "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
         },
         {
           "key": "request-id",
-          "value": "2c7e2596-764a-4c63-8097-5414c3648783"
+          "value": "bc4dedd6-6002-4e90-88df-265859012463"
         }
       ],
-      "responseCode": 200,
-      "responseTime": 209,
-      "responseContentType": "text/html; charset=UTF-8",
+      "responseCode": 500,
+      "responseTime": 31,
+      "responseContentType": "application/json",
       "assertions": [
         {
-          "name": "FAIL: HTML WAF / Request Rejected",
+          "name": "HTTP 200",
           "error": {
             "name": "AssertionError",
             "index": 0,
-            "test": "FAIL: HTML WAF / Request Rejected",
-            "message": "CQT trả HTML thay vì payload repo expect",
-            "stack": "AssertionError: CQT trả HTML thay vì payload repo expect\n   at Object.eval sandbox-script.js:1:23)"
+            "test": "HTTP 200",
+            "message": "expected 500 to deeply equal 200",
+            "stack": "AssertionError: expected 500 to deeply equal 200\n   at Object.eval sandbox-script.js:1:23)"
           }
         }
       ],
@@ -1178,15 +1178,15 @@
         },
         {
           "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
         },
         {
           "key": "request-id",
-          "value": "56fc467f-2a7f-4c11-8fa1-af378b1f616a"
+          "value": "75c133ef-84d4-4db2-84d0-275e55054295"
         }
       ],
       "responseCode": 500,
-      "responseTime": 131,
+      "responseTime": 34,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -1212,8 +1212,8 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/explanation/tbssdts/signed-notifications?sort=ngay%3Adesc%2Cso%3Adesc&search=ngay%3Dge%3D16%2F09%2F2026T00%3A00%3A00%3Bngay%3Dle%3D16%2F09%2F2026T23%3A59%3A59&size=50",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
         },
         {
           "key": "Accept",
@@ -1222,10 +1222,6 @@
         {
           "key": "Accept-Language",
           "value": "vi"
-        },
-        {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "End-Point",
@@ -1240,16 +1236,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+        },
+        {
           "key": "Action",
           "value": "T%C3%ACm%20ki%E1%BA%BFm"
         },
         {
           "key": "request-id",
-          "value": "887f0deb-915d-4521-b4d3-472d5164fcc7"
+          "value": "0bef7ab8-6aa6-417b-87d6-aa6c7a759440"
         }
       ],
       "responseCode": 200,
-      "responseTime": 134,
+      "responseTime": 110,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -1269,8 +1269,8 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/sco-explanation/tbssdts/signed-notifications?sort=ngay%3Adesc%2Cso%3Adesc&search=ngay%3Dge%3D16%2F09%2F2026T00%3A00%3A00%3Bngay%3Dle%3D16%2F09%2F2026T23%3A59%3A59&size=50",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
         },
         {
           "key": "Accept",
@@ -1279,10 +1279,6 @@
         {
           "key": "Accept-Language",
           "value": "vi"
-        },
-        {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
         },
         {
           "key": "End-Point",
@@ -1297,16 +1293,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+        },
+        {
           "key": "Action",
           "value": "T%C3%ACm%20ki%E1%BA%BFm"
         },
         {
           "key": "request-id",
-          "value": "c344a1a0-4786-41df-b65e-463fb09f5d90"
+          "value": "2916e39d-cd2b-47ae-84ef-7546722efbce"
         }
       ],
       "responseCode": 200,
-      "responseTime": 54,
+      "responseTime": 40,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -1326,8 +1326,8 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/pitw?size=50&search=nlap%3Dge%3D2026-09-15T17%3A00%3A00.000Z%3Bnlap%3Dle%3D2026-09-16T16%3A59%3A59.999Z&sort=nlap%3Adesc",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 Edg/150.0.0.0"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
         },
         {
           "key": "Accept",
@@ -1342,10 +1342,6 @@
           "value": "gzip, deflate, br"
         },
         {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
-        },
-        {
           "key": "End-Point",
           "value": "/tra-cuu/tra-cuu-chung-tu-tncn"
         },
@@ -1358,16 +1354,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 Edg/150.0.0.0"
+        },
+        {
           "key": "Action",
           "value": "T%C3%ACm%20ki%E1%BA%BFm"
         },
         {
           "key": "request-id",
-          "value": "1f3bdb36-e04d-42dd-9947-a381d6e385af"
+          "value": "8ca86f2a-24b8-4d36-9aa3-6cabb94447d3"
         }
       ],
       "responseCode": 200,
-      "responseTime": 66,
+      "responseTime": 48,
       "responseContentType": "application/json",
       "assertions": [
         {
@@ -1387,8 +1387,8 @@
       "url": "https://hoadondientu.gdt.gov.vn/api/pitw/export-xml?hsgoc=",
       "requestHeaders": [
         {
-          "key": "User-Agent",
-          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 Edg/150.0.0.0"
+          "key": "authorization",
+          "value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMTAwNzg1MjY5IiwidHlwZSI6MiwiZXhwIjoxNzg5NjI4MDA0LCJpYXQiOjE3ODk1NDE2MDR9.sJq4lm8jTO1-2jyQNwyzbI_lp6PMawJj4B1t9B6yBQbbj53-d_lvIJYAp_N98wfNtJUjGU50ruUtRxgBIpXGiA"
         },
         {
           "key": "Accept",
@@ -1403,10 +1403,6 @@
           "value": "gzip, deflate, br"
         },
         {
-          "key": "Authorization",
-          "value": "[đã gửi 199 ký tự — ẩn trong report]"
-        },
-        {
           "key": "End-Point",
           "value": "/tra-cuu/tra-cuu-chung-tu-tncn"
         },
@@ -1419,16 +1415,20 @@
           "value": "https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn"
         },
         {
+          "key": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 Edg/150.0.0.0"
+        },
+        {
           "key": "Action",
           "value": ""
         },
         {
           "key": "request-id",
-          "value": "15cca0fc-0dc2-4a73-9423-4f96ba049142"
+          "value": "79f3ba6d-b053-4f0a-842d-0b1c66628a3c"
         }
       ],
       "responseCode": 500,
-      "responseTime": 37,
+      "responseTime": 47,
       "responseContentType": "application/json",
       "assertions": [
         {

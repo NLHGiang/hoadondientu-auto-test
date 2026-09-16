@@ -6,7 +6,7 @@ Newman auto-test các API **Hóa đơn điện tử TCT** mà hệ thống mSMI 
 
 Gọi thẳng TCT (không qua proxy). Base path là `/api`, không dùng `:30000`.
 
-Query, header (đúng call site production) và **expect response** khớp logic xử lý trong `msmi-backend`, `crawl-data-api`, `proxy-request-api`, `msmi-frontend`. Mọi request thêm `request-id` UUID v4. Curl trong report = header production + `request-id` (không in `Postman-Token` / `Cache-Control`; `Host`/`Connection` do HTTP client tự gắn trên wire, không lặp trong curl). Cookie jar Newman tắt trên crawler; Cookie chỉ PITW khi có `pitw_cookie`. `last-test-report/` không tự commit — cần commit/push sau lần chạy.
+Query, header (thứ tự `parameters` như code) và **expect response** khớp `msmi-backend` / `crawl-data-api` / `proxy-request-api` / `msmi-frontend`. Mọi request thêm `request-id` UUID v4. Curl trong report **không ẩn** Authorization/Cookie/password — copy Import Postman (Raw text). `Host`/`Connection` do HTTP client gắn, không in trong curl. `last-test-report/` trên git sẽ lộ secret nếu commit.
 
 ## Cài đặt
 
@@ -92,7 +92,7 @@ last-test-report/              # lần chạy cuối — commit/push git
 
 Mở `test-report.md` trên git để xem summary + từng case. Mở `test-report.html` **trong đúng thư mục** đó (link `./responses/...` là tương đối).
 
-Curl report khớp header production + `request-id`. Không in `Postman-Token` / `Cache-Control`. `Host` và `Connection` được gửi trên wire (Node HTTP), không lặp trong curl. `Authorization` / `Cookie` / password hiện `[đã gửi N ký tự — ẩn trong report]`. Copy curl từ report **không replay** được phần đã ẩn.
+Curl report khớp thứ tự header production + `request-id`. Copy vào Postman. `Host`/`Connection` không in (HTTP client tự gắn). Authorization / Cookie / password **hiện nguyên** để replay.
 
 ## Expect — sai thì FAIL
 

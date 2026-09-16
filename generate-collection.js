@@ -27,6 +27,10 @@ const ppbNoFingerprint = { disabledSystemHeaders };
 /** Crawler HĐ / PITW / public / guest: không gửi Cookie jar từ GET /. */
 const ppbNoCookies = { disabledSystemHeaders, disableCookies: true };
 
+function withRequestId(headers) {
+  return headers.concat([requestId]);
+}
+
 function mergeHeaders(base, extra) {
   const extraList = extra && extra.length ? extra : [];
   const keys = new Set(extraList.map((x) => String(x.key).toLowerCase()));
@@ -35,7 +39,7 @@ function mergeHeaders(base, extra) {
   return merged;
 }
 
-/** SanitizeGenericForwardHeaders: UA Chrome/120 + Accept JSON. */
+/** SanitizeGenericForwardHeaders: UA Chrome/120 rồi Accept JSON, extra sau cùng. */
 function headersProxy(extra) {
   return mergeHeaders(
     [
@@ -46,45 +50,119 @@ function headersProxy(extra) {
   );
 }
 
-/** crawl-excel / assets / sold: Chrome/106 + portal HĐ. */
-function headersCrawlHd(extra) {
-  return mergeHeaders(
-    [
-      { key: 'User-Agent', value: uaCrawl },
-      { key: 'Accept', value: 'application/json, text/plain, */*' },
-      { key: 'Accept-Language', value: 'vi' },
-      { key: 'Origin', value: origin },
-      { key: 'Referer', value: `${origin}/` },
-      { key: 'Authorization', value: 'Bearer {{hddt_token}}' },
-    ],
-    extra
-  );
-}
-
-/** chung-tu-tncn-crawl-build.js */
-function headersPitw(extra) {
-  return mergeHeaders(
-    [
-      { key: 'User-Agent', value: uaPitw },
-      { key: 'Accept', value: 'application/json, text/plain, */*' },
-      { key: 'Accept-Language', value: 'vi' },
-      { key: 'Accept-Encoding', value: 'gzip, deflate, br' },
-      { key: 'End-Point', value: '/tra-cuu/tra-cuu-chung-tu-tncn' },
-      { key: 'Origin', value: origin },
-      { key: 'Referer', value: 'https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn' },
-      { key: 'Authorization', value: 'Bearer {{hddt_token}}' },
-    ],
-    extra
-  );
-}
-
 function headersPortal() {
-  return [
+  return withRequestId([
     { key: 'User-Agent', value: uaProxy },
     { key: 'Accept', value: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
     { key: 'Accept-Language', value: 'vi' },
-    requestId,
-  ];
+  ]);
+}
+
+/** crawl-excel.js headers.parameters — thứ tự object JS. */
+function headersExcel() {
+  return withRequestId([
+    { key: 'authorization', value: 'Bearer {{hddt_token}}' },
+    { key: 'Accept-Encoding', value: 'gzip,deflate,br' },
+    { key: 'Accept', value: '*/*' },
+    { key: 'Accept-Language', value: 'vi' },
+    { key: 'End-Point', value: '/tra-cuu/tra-cuu-hoa-don' },
+    { key: 'Origin', value: origin },
+    { key: 'Referer', value: `${origin}/` },
+    { key: 'User-Agent', value: uaCrawl },
+    {
+      key: 'Action',
+      value: 'Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)',
+    },
+  ]);
+}
+
+/** service/invoices/assets/index.js */
+function headersDetail() {
+  return withRequestId([
+    { key: 'authorization', value: 'Bearer {{hddt_token}}' },
+    { key: 'Accept', value: '*/*' },
+    { key: 'Accept-Language', value: 'vi' },
+    { key: 'End-Point', value: '/tra-cuu/tra-cuu-hoa-don' },
+    { key: 'Origin', value: origin },
+    { key: 'Referer', value: `${origin}/` },
+    { key: 'User-Agent', value: uaCrawl },
+    {
+      key: 'Action',
+      value: 'Xem%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)',
+    },
+  ]);
+}
+
+/** C# XML đổi Action trên request excel — cùng bộ header excel. */
+function headersXml() {
+  return withRequestId([
+    { key: 'authorization', value: 'Bearer {{hddt_token}}' },
+    { key: 'Accept-Encoding', value: 'gzip,deflate,br' },
+    { key: 'Accept', value: '*/*' },
+    { key: 'Accept-Language', value: 'vi' },
+    { key: 'End-Point', value: '/tra-cuu/tra-cuu-hoa-don' },
+    { key: 'Origin', value: origin },
+    { key: 'Referer', value: `${origin}/` },
+    { key: 'User-Agent', value: uaCrawl },
+    {
+      key: 'Action',
+      value: 'Xu%E1%BA%A5t%20xml%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)',
+    },
+  ]);
+}
+
+/** routes/invoices related + SanitizeGenericForwardHeaders (UA/Accept nếu thiếu). */
+function headersRelated() {
+  return withRequestId([
+    { key: 'Authorization', value: 'Bearer {{hddt_token}}' },
+    {
+      key: 'Action',
+      value: 'Xem%20th%C3%B4ng%20tin%20li%C3%AAn%20quan%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)',
+    },
+    { key: 'End-Point', value: '/tra-cuu/tra-cuu-hoa-don' },
+    { key: 'Origin', value: origin },
+    { key: 'Referer', value: `${origin}/` },
+    { key: 'User-Agent', value: uaProxy },
+    { key: 'Accept', value: 'application/json, text/plain, */*' },
+  ]);
+}
+
+/** routes/invoices relative: Authorization only + forwarder UA/Accept. */
+function headersRelative() {
+  return withRequestId([
+    { key: 'User-Agent', value: uaProxy },
+    { key: 'Accept', value: 'application/json, text/plain, */*' },
+    { key: 'Authorization', value: 'Bearer {{hddt_token}}' },
+  ]);
+}
+
+/** hdtbssrses/sold.js */
+function headersTbss() {
+  return withRequestId([
+    { key: 'authorization', value: 'Bearer {{hddt_token}}' },
+    { key: 'Accept', value: 'application/json, text/plain, */*' },
+    { key: 'Accept-Language', value: 'vi' },
+    { key: 'End-Point', value: '/tra-cuu/tra-cuu-hoa-don' },
+    { key: 'Origin', value: origin },
+    { key: 'Referer', value: `${origin}/` },
+    { key: 'User-Agent', value: uaCrawl },
+    { key: 'Action', value: 'T%C3%ACm%20ki%E1%BA%BFm' },
+  ]);
+}
+
+/** chung-tu-tncn-crawl-build.js — list vs xml (Action rỗng). */
+function headersPitw(forXml) {
+  return withRequestId([
+    { key: 'authorization', value: 'Bearer {{hddt_token}}' },
+    { key: 'Accept', value: 'application/json, text/plain, */*' },
+    { key: 'Accept-Language', value: 'vi' },
+    { key: 'Accept-Encoding', value: 'gzip, deflate, br' },
+    { key: 'End-Point', value: '/tra-cuu/tra-cuu-chung-tu-tncn' },
+    { key: 'Origin', value: origin },
+    { key: 'Referer', value: 'https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-chung-tu-tncn' },
+    { key: 'User-Agent', value: uaPitw },
+    { key: 'Action', value: forXml ? '' : 'T%C3%ACm%20ki%E1%BA%BFm' },
+  ]);
 }
 
 const tctHelpers = [
@@ -345,17 +423,7 @@ function itemReq(name, request, assertExec, { cookies = false } = {}) {
   };
 }
 
-function authGet(name, pathSegments, query, extraHeaders, assertExec, family) {
-  let header;
-  if (family === 'pitw') header = headersPitw(extraHeaders);
-  else if (family === 'proxy') {
-    header = headersProxy([
-      { key: 'Authorization', value: 'Bearer {{hddt_token}}' },
-      ...(extraHeaders || []),
-    ]);
-  } else {
-    header = headersCrawlHd(extraHeaders);
-  }
+function authGet(name, pathSegments, query, header, assertExec) {
   return itemReq(name, {
     method: 'GET',
     header,
@@ -383,44 +451,6 @@ const excelScoQs = [
 /** purchase → export-excel-sold + type=purchase; sold → export-excel, không type */
 const excelPurchaseQs = excelQs.concat([{ key: 'type', value: 'purchase' }]);
 const excelPurchaseScoQs = excelScoQs.concat([{ key: 'type', value: 'purchase' }]);
-
-const acceptStar = { key: 'Accept', value: '*/*' };
-const acceptEncGzip = { key: 'Accept-Encoding', value: 'gzip,deflate,br' };
-
-/** crawl-excel.js / invoice-init-sync-seed.js */
-const actionExcel = {
-  key: 'Action',
-  value: 'Xu%E1%BA%A5t%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)',
-};
-/** service/invoices/assets/index.js */
-const actionDetail = {
-  key: 'Action',
-  value: 'Xem%20h%C3%B3a%20%C4%91%C6%A1n%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)',
-};
-/** CrawlEInvoiceService.cs export-xml */
-const actionXml = {
-  key: 'Action',
-  value: 'Xu%E1%BA%A5t%20xml%20(h%C3%B3a%20%C4%91%C6%A1n%20mua%20v%C3%A0o)',
-};
-/** routes/invoices/index.js related */
-const actionRelated = {
-  key: 'Action',
-  value: 'Xem%20th%C3%B4ng%20tin%20li%C3%AAn%20quan%20(h%C3%B3a%20%C4%91%C6%A1n%20b%C3%A1n%20ra)',
-};
-/** sold.js TBSS + CQT_CHUNG_TU.actionSearch */
-const actionSearch = { key: 'Action', value: 'T%C3%ACm%20ki%E1%BA%BFm' };
-/** chung-tu-tncn-crawl-build.js forXml → Action rỗng */
-const actionEmpty = { key: 'Action', value: '' };
-
-const endPointHd = { key: 'End-Point', value: '/tra-cuu/tra-cuu-hoa-don' };
-
-const excelHeaders = [acceptStar, acceptEncGzip, actionExcel, endPointHd];
-const detailHeaders = [acceptStar, actionDetail, endPointHd];
-const xmlHeaders = [acceptStar, actionXml, endPointHd];
-const relatedHeaders = [actionRelated, endPointHd];
-const tbssHeaders = [actionSearch, endPointHd];
-const pitwListHeaders = [actionSearch];
-const pitwXmlHeaders = [actionEmpty];
 
 const collection = {
   info: {
@@ -595,36 +625,36 @@ collection.item.push({
 collection.item.push({
   name: '04_EXCEL',
   item: [
-    authGet('01 GET /api/query/invoices/export-excel', ['query', 'invoices', 'export-excel'], excelQs, excelHeaders, assertExcel),
-    authGet('02 GET /api/sco-query/invoices/export-excel', ['sco-query', 'invoices', 'export-excel'], excelScoQs, excelHeaders, assertExcel),
-    authGet('03 GET /api/query/invoices/export-excel-sold', ['query', 'invoices', 'export-excel-sold'], excelPurchaseQs, excelHeaders, assertExcel),
-    authGet('04 GET /api/sco-query/invoices/export-excel-sold', ['sco-query', 'invoices', 'export-excel-sold'], excelPurchaseScoQs, excelHeaders, assertExcel),
+    authGet('01 GET /api/query/invoices/export-excel', ['query', 'invoices', 'export-excel'], excelQs, headersExcel(), assertExcel),
+    authGet('02 GET /api/sco-query/invoices/export-excel', ['sco-query', 'invoices', 'export-excel'], excelScoQs, headersExcel(), assertExcel),
+    authGet('03 GET /api/query/invoices/export-excel-sold', ['query', 'invoices', 'export-excel-sold'], excelPurchaseQs, headersExcel(), assertExcel),
+    authGet('04 GET /api/sco-query/invoices/export-excel-sold', ['sco-query', 'invoices', 'export-excel-sold'], excelPurchaseScoQs, headersExcel(), assertExcel),
   ],
 });
 
 collection.item.push({
   name: '05_DETAIL',
   item: [
-    authGet('01 GET /api/query/invoices/detail', ['query', 'invoices', 'detail'], invoiceQs, detailHeaders, assertDetail),
-    authGet('02 GET /api/sco-query/invoices/detail', ['sco-query', 'invoices', 'detail'], invoiceQs, detailHeaders, assertDetail),
+    authGet('01 GET /api/query/invoices/detail', ['query', 'invoices', 'detail'], invoiceQs, headersDetail(), assertDetail),
+    authGet('02 GET /api/sco-query/invoices/detail', ['sco-query', 'invoices', 'detail'], invoiceQs, headersDetail(), assertDetail),
   ],
 });
 
 collection.item.push({
   name: '06_XML',
   item: [
-    authGet('01 GET /api/query/invoices/export-xml', ['query', 'invoices', 'export-xml'], invoiceQs, xmlHeaders, assertInvoiceXml),
-    authGet('02 GET /api/sco-query/invoices/export-xml', ['sco-query', 'invoices', 'export-xml'], invoiceQs, xmlHeaders, assertInvoiceXml),
+    authGet('01 GET /api/query/invoices/export-xml', ['query', 'invoices', 'export-xml'], invoiceQs, headersXml(), assertInvoiceXml),
+    authGet('02 GET /api/sco-query/invoices/export-xml', ['sco-query', 'invoices', 'export-xml'], invoiceQs, headersXml(), assertInvoiceXml),
   ],
 });
 
 collection.item.push({
   name: '07_RELATED',
   item: [
-    authGet('01 GET /api/query/invoices/related', ['query', 'invoices', 'related'], invoiceQs, relatedHeaders, assertRelated),
-    authGet('02 GET /api/sco-query/invoices/related', ['sco-query', 'invoices', 'related'], invoiceQs, relatedHeaders, assertRelated),
-    authGet('03 GET /api/query/invoices/relative', ['query', 'invoices', 'relative'], invoiceQs, undefined, assertRelative, 'proxy'),
-    authGet('04 GET /api/sco-query/invoices/relative', ['sco-query', 'invoices', 'relative'], invoiceQs, undefined, assertRelative, 'proxy'),
+    authGet('01 GET /api/query/invoices/related', ['query', 'invoices', 'related'], invoiceQs, headersRelated(), assertRelated),
+    authGet('02 GET /api/sco-query/invoices/related', ['sco-query', 'invoices', 'related'], invoiceQs, headersRelated(), assertRelated),
+    authGet('03 GET /api/query/invoices/relative', ['query', 'invoices', 'relative'], invoiceQs, headersRelative(), assertRelative),
+    authGet('04 GET /api/sco-query/invoices/relative', ['sco-query', 'invoices', 'relative'], invoiceQs, headersRelative(), assertRelative),
   ],
 });
 
@@ -635,12 +665,12 @@ collection.item.push({
       { key: 'sort', value: '{{tbss_sort}}' },
       { key: 'search', value: '{{tbss_search}}' },
       { key: 'size', value: '{{page_size}}' },
-    ], tbssHeaders, assertTbss),
+    ], headersTbss(), assertTbss),
     authGet('02 GET /api/sco-explanation/tbssdts/signed-notifications', ['sco-explanation', 'tbssdts', 'signed-notifications'], [
       { key: 'sort', value: '{{tbss_sort}}' },
       { key: 'search', value: '{{tbss_search}}' },
       { key: 'size', value: '{{page_size}}' },
-    ], tbssHeaders, assertTbss),
+    ], headersTbss(), assertTbss),
   ],
 });
 
@@ -651,10 +681,10 @@ collection.item.push({
       { key: 'size', value: '{{page_size}}' },
       { key: 'search', value: '{{pitw_search}}' },
       { key: 'sort', value: 'nlap:desc' },
-    ], pitwListHeaders, assertPitwList, 'pitw'),
+    ], headersPitw(false), assertPitwList),
     authGet('02 GET /api/pitw/export-xml', ['pitw', 'export-xml'], [
       { key: 'hsgoc', value: '{{pitw_hsgoc}}' },
-    ], pitwXmlHeaders, assertPitwXml, 'pitw'),
+    ], headersPitw(true), assertPitwXml),
   ],
 });
 

@@ -1,1 +1,1 @@
-{"timestamp":"16/09/2026 11:18:54","message":"Required request parameter 'hsgoc' for method parameter type UUID is present but converted to null","details":"","path":"uri=/export-xml"}
+{"timestamp":"16/09/2026 13:53:36","message":"Required request parameter 'hsgoc' for method parameter type UUID is present but converted to null","details":"","path":"uri=/export-xml"}

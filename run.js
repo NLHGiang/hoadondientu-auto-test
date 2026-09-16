@@ -14,7 +14,7 @@ const { randomUUID } = require('crypto');
 const newman = require('newman');
 const { Url, RequestBody } = require('postman-collection');
 const { slugify } = require('./lib/slug');
-const { buildCurl, resolveUrl, headersToList, bodyToString, maskSecrets, filterAndSortHeaders } = require('./lib/curl');
+const { buildCurl, resolveUrl, headersToList, bodyToString, filterFingerprintHeaders } = require('./lib/curl');
 const { saveResponse, getHeader, readResponseBody } = require('./lib/save-response');
 const { writeReport } = require('./lib/build-report');
 
@@ -216,7 +216,9 @@ function stripNewmanFingerprint(request) {
 
 function injectBearer(request, token) {
   if (!token) return;
-  request.headers.upsert({ key: 'Authorization', value: `Bearer ${token}` });
+  const members = request.headers.members || [];
+  const hit = members.find((h) => /^authorization$/i.test(h.key));
+  request.headers.upsert({ key: hit?.key || 'Authorization', value: `Bearer ${token}` });
 }
 
 function removeQuery(url, key) {
@@ -515,12 +517,9 @@ function main() {
       const reqJson = typeof args.request.toJSON === 'function' ? args.request.toJSON() : args.request;
       caseRecord.method = (reqJson.method || 'GET').toUpperCase();
       caseRecord.url = resolveUrl(reqJson.url);
-      let headers = filterAndSortHeaders(headersToList(reqJson.header));
-      let body = bodyToString(reqJson.body);
-      ({ headers, body } = maskSecrets(headers, body));
-      caseRecord.requestHeaders = headers;
-      caseRecord.requestBody = body;
-      caseRecord.curl = buildCurl(args.request);
+      caseRecord.requestHeaders = filterFingerprintHeaders(headersToList(reqJson.header));
+      caseRecord.requestBody = bodyToString(reqJson.body);
+      caseRecord.curl = buildCurl(args.request, { mask: false });
     }
 
     if (args?.response) {
